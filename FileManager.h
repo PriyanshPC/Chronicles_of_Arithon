@@ -2,7 +2,7 @@
 #include <fstream>
 
 #define FILENAME "filesave.dat"
-#define TEMPFILENAME "filesave.dat"
+#define FILENAME "filesave.dat"
 
 enum fileLine{
 	userNameFileLine = 1,
@@ -13,6 +13,12 @@ enum fileLine{
 
 using namespace std;
 
+string getUsername(/*Player.userName*/);
+string getPassword(/*Player.password*/);
+string getStoryLocation(/*Player.storyLocation*/);
+string getItem(/*Player.Item*/);
+
+
 class FileSystem {
 private:
 	string fileName;
@@ -20,7 +26,7 @@ private:
 public:
 	FileSystem() : fileName(FILENAME) {}
 
-	void fileSystemStart() {
+	void loadFile() {
 		if (!checkForFile()) { // If file does not exist
 			ofstream file(fileName); // Create File
 			file.close(); // Close file
@@ -33,6 +39,7 @@ public:
 
 	bool checkForFile() { // Check if file exists
 		ofstream file(fileName, ios::in); // opens for reading
+		file.close(); // Close file
 		return file.good(); // returns true if file exists, false if not
 	}
 
@@ -43,16 +50,36 @@ public:
 		else {
 			ofstream file(fileName, ios::app); // open file with append (do not overwrite);
 			file << printThis;
+			file.close(); // Close file
 			cout << "File Updated" << endl;
 		}
 	}
 
-	void readToFile() {
+	void saveFile(/*Player.player*/) {
+		if (!checkForFile()) {
+			perror("ERROR: File could not be found...\n");
+		}
+		else {
+			ofstream file(fileName, ios::app); // open file with append (do not overwrite);
+			file << getUsername();
+			file << getPassword();
+			file << getStoryLocation();
+			file << getItem();
+			file.close(); // Close file
+			cout << "File Updated" << endl;
+		}
+	
+
+	}
+
+	void readFromFile() {
 		if (!checkForFile()) {
 			perror("ERROR: File could not be found...\n");
 		}
 		else {
 			ofstream file(fileName, ios::in); // open file with read (do not overwrite);
+			file.close(); // Close file
 		}
 	}
+
 };

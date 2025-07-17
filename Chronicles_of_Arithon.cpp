@@ -9,7 +9,7 @@ int main()
     std::cout << "Hello World!\n";
 
     FileSystem file;
-    file.fileSystemStart();
+    file.loadFile();
 
 }
 
