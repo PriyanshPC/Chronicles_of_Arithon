@@ -2,10 +2,15 @@
 //
 
 #include <iostream>
+#include "FileManager.h"
 
 int main()
 {
     std::cout << "Hello World!\n";
+
+    FileSystem file;
+    file.fileSystemStart();
+
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
