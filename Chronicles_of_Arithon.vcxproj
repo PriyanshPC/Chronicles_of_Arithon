@@ -129,6 +129,9 @@
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="StoryEngine.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FileManager.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
