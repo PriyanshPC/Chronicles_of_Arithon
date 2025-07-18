@@ -11,6 +11,9 @@ int main()
     FileSystem file;
     file.loadFile();
 
+    playerStats player;
+    file.saveFile(player);
+
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

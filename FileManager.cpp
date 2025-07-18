@@ -5,18 +5,18 @@
 using namespace std;
 
 
-string getUsername(/*Player.userName*/) {
-	return "";
+string getUsername(playerStats player) {
+	return player.getName();
 }
 
-string getPassword(/*Player.password*/) {
-	return "";
+string getPassword(playerStats player) {
+	return player.getPass();
 }
 
-string getStoryLocation(/*Player.storyLocation*/) {
-	return "";
+string getStoryLocation(playerStats player) {
+	return player.getLocation();
 }
 
-string getItem(/*Player.Item*/) {
-	return "";
+string getItem(playerStats player) {
+	return player.getItem();
 }

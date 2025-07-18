@@ -4,6 +4,35 @@
 #define FILENAME "filesave.dat"
 #define FILENAME "filesave.dat"
 
+using namespace std;
+
+class playerStats {
+private:
+	string userName;
+	string password;
+	string storyLocation;
+	string item;
+
+public:
+	playerStats() : userName("Player Name"), password("PlayerPassword"), storyLocation("Beginning"), item("None") {}
+	
+	string getName() {
+		return userName;
+	}
+
+	string getPass() {
+		return password;
+	}
+
+	string getLocation() {
+		return storyLocation;
+	}
+
+	string getItem() {
+		return item;
+	}
+};
+
 enum fileLine{
 	userNameFileLine = 1,
 	passwordFileLine,
@@ -11,12 +40,10 @@ enum fileLine{
 	locationFileLine
 };
 
-using namespace std;
-
-string getUsername(/*Player.userName*/);
-string getPassword(/*Player.password*/);
-string getStoryLocation(/*Player.storyLocation*/);
-string getItem(/*Player.Item*/);
+string getUsername(playerStats player);
+string getPassword(playerStats player);
+string getStoryLocation(playerStats player);
+string getItem(playerStats player);
 
 
 class FileSystem {
@@ -55,16 +82,16 @@ public:
 		}
 	}
 
-	void saveFile(/*Player.player*/) {
+	void saveFile(playerStats player) {
 		if (!checkForFile()) {
-			perror("ERROR: File could not be found...\n");
+			perror("File could not be found... Creating new File\n");
 		}
 		else {
-			ofstream file(fileName, ios::app); // open file with append (do not overwrite);
-			file << getUsername();
-			file << getPassword();
-			file << getStoryLocation();
-			file << getItem();
+			ofstream file(fileName); // open file with append (do not overwrite);
+			file << getUsername(player) << endl;
+			file << getPassword(player) << endl;
+			file << getStoryLocation(player) << endl;
+			file << getItem(player) << endl;
 			file.close(); // Close file
 			cout << "File Updated" << endl;
 		}
@@ -81,5 +108,4 @@ public:
 			file.close(); // Close file
 		}
 	}
-
 };
