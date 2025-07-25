@@ -130,7 +130,9 @@
     <ClCompile Include="StoryEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Authenticator.h" />
     <ClInclude Include="FileManager.h" />
+    <ClInclude Include="globals.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
