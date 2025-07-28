@@ -1,10 +1,47 @@
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include <string>
 
 #define FILENAME "filesave.dat"
 #define FILENAME "filesave.dat"
 
 using namespace std;
+
+// ------------------------------------ Start of the section added for Authenticator Module -------------------------
+// This structure is used to represent a user credential.
+// This interface is a requirement from the Authorization class and can't be changed.
+typedef struct User {
+	string username;
+	string encryptedPassword;
+}User;
+
+// This class is used to test integration with the authenticator module
+// The requirement here is to have the member function behave the same way
+// The developer of the FILE Manager module can decide to move these methods 
+// into a different class for their convenience
+
+class FileIO {
+private:
+	// This vector simulates the credential table in memory. 
+	// This interface is a requirement from Authorization class.
+	vector<User> credentialList;
+
+public:
+	FileIO();
+
+	// Returns a vector of User structs
+	// This function definiton is used to read the credential table from the file. 
+	// This interface is a requirement from Authorization class and can't be changed 
+	vector<User> readCredentialTable();
+
+	// This function definiton is used to add a new credential to the file. 
+	// This interface is a requirement from Authorization class and can't be changed 
+	bool addCredential(const string& username, const string& hashedPassword);
+};
+
+// ------------------------------------ End of the section added for Authenticator Module -------------------------
+
 
 class playerStats {
 private:

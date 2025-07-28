@@ -1,19 +1,32 @@
-// Chronicles_of_Arithon.cpp : This file contains the 'main' function. Program execution begins and ends there.
+// Chronicles_of_ Arithon.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
 #include <iostream>
 #include "FileManager.h"
+#include "Authenticator.h"
 
-int main()
+using namespace std;
+
+int main(int argCount, char** argVector)
 {
-    std::cout << "Hello World!\n";
+    //FileSystem file;
+    //file.loadFile();
 
-    FileSystem file;
-    file.loadFile();
+    //playerStats player;
+    //file.saveFile(player);
+	
+	// Create an instance of FileIO to read/write user credentials
+	// If the author of FileIO module decides to change the FileIO class 
+	// We have to change it here
+	FileIO fileIOInstance;
 
-    playerStats player;
-    file.saveFile(player);
+	// Create an instance of the Authorization class:
+	// The constructor takes in the FIleIO instance to access user credentials
+	// If the author of FileIO module decides to change the FileIO class 
+	// We have to change it here
+	Authenticator AuthInstant(fileIOInstance, argCount, argVector);
 
+	return 0;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
