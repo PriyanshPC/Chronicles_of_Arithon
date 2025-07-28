@@ -190,7 +190,7 @@ vector<string> Authenticator::getInputArguments() const {
 	return inputArgs;
 }
 
-void Authenticator::loadUserCredentials(FileIO& fileIO)
+void Authenticator::loadUserCredentials(FileSystem& fileIO)
 {
 	vector<User> users = fileIO.readCredentialTable();
 

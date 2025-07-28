@@ -15,14 +15,14 @@ int main(int argCount, char** argVector)
     //playerStats player;
     //file.saveFile(player);
 	
-	// Create an instance of FileIO to read/write user credentials
-	// If the author of FileIO module decides to change the FileIO class 
+	// Create an instance of FileSystem to read/write user credentials
+	// If the author of FileSystem module decides to change the FileSystem class 
 	// We have to change it here
-	FileIO fileIOInstance;
+	FileSystem fileIOInstance;
 
 	// Create an instance of the Authorization class:
-	// The constructor takes in the FIleIO instance to access user credentials
-	// If the author of FileIO module decides to change the FileIO class 
+	// The constructor takes in the FileSystem instance to access user credentials
+	// If the author of FileSystem module decides to change the FileSystem class 
 	// We have to change it here
 	Authenticator AuthInstant(fileIOInstance, argCount, argVector);
 
