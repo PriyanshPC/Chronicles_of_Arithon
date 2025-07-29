@@ -10,6 +10,8 @@ private:
 	string encryptedPassword;
 
 public:
+	user(string name, string pass) : username(name), encryptedPassword(pass) {}
+
 	string getUsername() {
 		return username;
 	}
