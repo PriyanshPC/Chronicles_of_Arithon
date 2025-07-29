@@ -8,7 +8,7 @@ using namespace std;
 
 int main()
 {
-    std::cout << "GAME START!\n";
+    std::cout << "GAME START!" << endl;
 
     FileSystem file;
 
