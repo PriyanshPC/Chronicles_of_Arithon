@@ -3,11 +3,12 @@
 
 #include <iostream>
 #include "FileManager.h"
+#include "battle.h"
 
 using namespace std;
 
-int main()
-{
+
+int main(){   
     std::cout << "GAME START!" << endl;
 
     FileSystem file;

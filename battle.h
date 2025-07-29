@@ -1,12 +1,17 @@
 #pragma once
 #include <iostream>
+#include <random>
 
 using namespace std;
+
 
 
 // *** FUNCTIONS ***
 
 void Break();
+
+int randomNumber(int min, int max);
+
 
 
 // *** CLASSES ***
