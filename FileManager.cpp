@@ -20,3 +20,4 @@ string getStoryLocation(playerStats player) {
 string getItem(playerStats player) {
 	return player.getItem();
 }
+
