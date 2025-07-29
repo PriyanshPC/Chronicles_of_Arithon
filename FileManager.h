@@ -16,7 +16,7 @@ private:
 
 public:
 	playerStats() : userName("Player Name"), password("PlayerPassword"), storyLocation("Beginning"), item("None") {}
-	
+
 	string getName() {
 		return userName;
 	}
@@ -34,7 +34,7 @@ public:
 	}
 };
 
-enum fileLine{
+enum fileLine {
 	userNameFileLine = 1,
 	passwordFileLine,
 	itemFileLine,
@@ -96,7 +96,7 @@ public:
 			file.close(); // Close file
 			cout << "File Updated" << endl;
 		}
-	
+
 
 	}
 
