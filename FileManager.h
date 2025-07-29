@@ -1,7 +1,8 @@
 #include <iostream>
 #include <fstream>
+#include <string>
+#include "Authenticator.h"
 
-#define FILENAME "filesave.dat"
 #define FILENAME "filesave.dat"
 
 using namespace std;
@@ -107,5 +108,36 @@ public:
 			ofstream file(fileName, ios::in); // open file with read (do not overwrite);
 			file.close(); // Close file
 		}
+	}
+
+	string readUsername() {
+		string username;
+		ifstream file(FILENAME);
+		if (file.is_open()) {
+			getline(file, username);
+			file.close();
+		}
+		else {
+			perror("ERROR: File could not be found...\n");
+		}
+		return username;
+	}
+		
+	string readPassword() {
+		string password;
+		ifstream file(FILENAME);
+		if (file.is_open()) {
+			getline(file, password);
+			file.close();
+		}
+		else {
+			perror("ERROR: File could not be found...\n");
+		}
+		return password;
+	}
+
+	user readCredentials() {
+		user usr(readUsername(), readPassword());
+		return usr;
 	}
 };
