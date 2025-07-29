@@ -7,22 +7,36 @@
 
 using namespace std;
 
+
+enum fileLine {
+	userNameFileLine = 1,
+	passwordFileLine,
+	itemFileLine,
+	locationFileLine
+};
+
 class playerStats {
 private:
-	string userName;
-	string password;
+	user usr;
 	string storyLocation;
 	string item;
 
 public:
-	playerStats() : userName("Player Name"), password("PlayerPassword"), storyLocation("Beginning"), item("None") {}
+	playerStats() :storyLocation("Beginning"), item("None") {
+		usr.setPassword("password");
+		usr.setUsername("username");
+	}
 
 	string getName() {
-		return userName;
+		return usr.getUsername();
 	}
 
 	string getPass() {
-		return password;
+		return usr.getPassword();
+	}
+
+	bool checkPass(string temp) {
+		return (temp == usr.getPassword());
 	}
 
 	string getLocation() {
@@ -34,18 +48,11 @@ public:
 	}
 };
 
-enum fileLine {
-	userNameFileLine = 1,
-	passwordFileLine,
-	itemFileLine,
-	locationFileLine
-};
 
 string getUsername(playerStats player);
 string getPassword(playerStats player);
 string getStoryLocation(playerStats player);
 string getItem(playerStats player);
-
 
 class FileSystem {
 private:
@@ -66,9 +73,15 @@ public:
 	}
 
 	bool checkForFile() { // Check if file exists
-		ofstream file(fileName, ios::in); // opens for reading
-		file.close(); // Close file
-		return file.good(); // returns true if file exists, false if not
+		ifstream file(fileName); // opens for reading
+
+		if (file.is_open()) {
+			file.close();
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	void printToFile(string printThis, fileLine fLine) {
@@ -84,20 +97,13 @@ public:
 	}
 
 	void saveFile(playerStats player) {
-		if (!checkForFile()) {
-			perror("File could not be found... Creating new File\n");
-		}
-		else {
-			ofstream file(fileName); // open file with append (do not overwrite);
-			file << getUsername(player) << endl;
-			file << getPassword(player) << endl;
-			file << getStoryLocation(player) << endl;
-			file << getItem(player) << endl;
-			file.close(); // Close file
-			cout << "File Updated" << endl;
-		}
-
-
+		ofstream file(fileName); // open file with append (do not overwrite);
+		file << getUsername(player) << endl; // line 1
+		file << getPassword(player) << endl; // line 2
+		file << getStoryLocation(player) << endl; // line 3
+		file << getItem(player) << endl; // line 4
+		file.close(); // Close file
+		cout << "File Updated" << endl;
 	}
 
 	void readFromFile() {
@@ -105,7 +111,7 @@ public:
 			perror("ERROR: File could not be found...\n");
 		}
 		else {
-			ofstream file(fileName, ios::in); // open file with read (do not overwrite);
+			ifstream file(fileName); // open file with read (do not overwrite);
 			file.close(); // Close file
 		}
 	}
@@ -128,12 +134,18 @@ public:
 		ifstream file(FILENAME);
 		if (file.is_open()) {
 			getline(file, password);
+			getline(file, password);
 			file.close();
 		}
 		else {
 			perror("ERROR: File could not be found...\n");
 		}
 		return password;
+	}
+
+
+	bool checkPassword(string temp) {
+		return temp == readPassword();
 	}
 
 	user readCredentials() {

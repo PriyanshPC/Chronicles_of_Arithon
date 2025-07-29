@@ -10,6 +10,7 @@ private:
 	string encryptedPassword;
 
 public:
+	user() : username(""), encryptedPassword("") {}
 	user(string name, string pass) : username(name), encryptedPassword(pass) {}
 
 	string getUsername() {
