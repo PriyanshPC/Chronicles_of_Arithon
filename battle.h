@@ -28,8 +28,8 @@ public:
 	}
 
 	int StrongMove() {
-		int random = (rand() % 10 + -5);
-		return random + 15;
+		return randomNumber(-1, 10) + 15;
+		
 	}
 
 	int Turn() {
@@ -55,6 +55,11 @@ public:
 			}
 		}
 	}
+
+	string getName() {
+		return name;
+	}
+	
 
 	void PrintHealth() {
 		cout << "Player Health: " << strength << endl;
@@ -90,7 +95,7 @@ public:
 	CompFighter(string n) : Fighter(n) {}
 
 	int SelectMove() {
-		return rand() % 2 + 1;
+		return randomNumber(1, 2);
 	}
 
 	void PrintHealth() {
@@ -102,7 +107,7 @@ public:
 	}
 
 	int Turn() {
-		return rand() % 2 + 1;
+		return randomNumber(1,2);
 	}
 
 	int MoveChoice(int choice) {
@@ -135,20 +140,24 @@ public:
 
 		bool fight = true;
 
+		cout << "You encountered " << comp.getName() << ", You must fight!" << endl;
+
 		while (fight) {
 			comp.SetStrength(player.MoveChoice(player.Turn()));
 			if (!isAlive(comp)) {
-				cout << "You Win" << endl;
+				cout << "You Beat " << comp.getName() << endl;
 				fight = false;
 				break;
 			}
-
-
+			
+			cout << endl;
 			player.SetStrength(comp.MoveChoice(comp.Turn()));
+			cout << endl;
+
 			player.PrintHealth();
 			comp.PrintHealth();
 			if (!isAlive(player)) {
-				cout << "You Lose" << endl;
+				cout << "You Lost to " << comp.getName() << endl;
 				fight = false;
 				break;
 			}

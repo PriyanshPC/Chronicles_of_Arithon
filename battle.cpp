@@ -13,7 +13,6 @@ void Break() {
 }
 
 int randomNumber(int min, int max) {
-
 	uniform_int_distribution<int> dist(min, max);
 	return dist(gen);
 }

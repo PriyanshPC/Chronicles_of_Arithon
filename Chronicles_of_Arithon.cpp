@@ -53,7 +53,14 @@ int main(){
     playerStats player;
     file.saveFile(player);
 
-    
+
+    Break();
+    cout << "*** BATTLE TIME ***\n" << endl;
+    Fighter plyr("player");
+    CompFighter comp("Beast");
+
+    battle battleOne; 
+    battleOne.Fight(plyr, comp);
 
 }
 
