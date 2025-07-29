@@ -3,45 +3,11 @@
 
 using namespace std;
 
-class battle
-{
-
-public:
-	bool isAlive(Fighter fighter) {
-		return fighter.GetStrength() > 0;
-	}
-	void Fight(Fighter player, CompFighter comp) {
-
-		bool fight = true;
-
-		while (fight) {
-			comp.SetStrength(player.MoveChoice(player.Turn()));
-			if (!isAlive(comp)) {
-				cout << "You Win" << endl;
-				fight = false;
-				break;
-			}
-
-
-			player.SetStrength(comp.MoveChoice(comp.Turn()));
-			player.PrintHealth();
-			comp.PrintHealth();
-			if (!isAlive(player)) {
-				cout << "You Lose" << endl;
-				fight = false;
-				break;
-			}
-			Break();
-		}
-
-		cout << "\n Fight Over!" << endl;
-	}
-};
-
 
 // *** FUNCTIONS ***
 
 void Break();
+
 
 // *** CLASSES ***
 class Fighter {
@@ -152,3 +118,39 @@ public:
 	}
 
 };
+
+class battle
+{
+
+public:
+	bool isAlive(Fighter fighter) {
+		return fighter.GetStrength() > 0;
+	}
+	void Fight(Fighter player, CompFighter comp) {
+
+		bool fight = true;
+
+		while (fight) {
+			comp.SetStrength(player.MoveChoice(player.Turn()));
+			if (!isAlive(comp)) {
+				cout << "You Win" << endl;
+				fight = false;
+				break;
+			}
+
+
+			player.SetStrength(comp.MoveChoice(comp.Turn()));
+			player.PrintHealth();
+			comp.PrintHealth();
+			if (!isAlive(player)) {
+				cout << "You Lose" << endl;
+				fight = false;
+				break;
+			}
+			Break();
+		}
+
+		cout << "\n Fight Over!" << endl;
+	}
+};
+
