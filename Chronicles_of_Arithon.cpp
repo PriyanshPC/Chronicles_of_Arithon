@@ -4,15 +4,55 @@
 #include <iostream>
 #include "FileManager.h"
 
+using namespace std;
+
 int main()
 {
-    std::cout << "Hello World!\n";
+    std::cout << "GAME START!\n";
 
     FileSystem file;
+
+    if (!file.checkForFile()) { // if file is not found
+        exit(EXIT_FAILURE); // exit with error
+    }
+
+    cout << "We have a save file named: " << file.readUsername() << endl;
+    cout << " Would you like to use this File? (Y/N): ";
+
+    char answer;
+    cin >> answer;
+    
+    switch (tolower(answer)) {
+    case 'y':
+        break;
+    case 'n':
+        cout << "Ok Bye!";
+        return 0;
+    default:
+        perror("Invalid entry");
+        exit(EXIT_FAILURE);
+    }
+      
+    cout << file.readPassword() << endl;
+
+    string temp;
+    cout << "enter Password: ";
+    cin >> temp;
+    if (file.checkPassword(temp)) {
+        cout << "\nlogged in!" << endl;
+    }
+
+    else {
+        cout << "Wrong password" << endl;
+        return 1;
+    }
+         
     file.loadFile();
 
     playerStats player;
     file.saveFile(player);
+
+    
 
 }
 
