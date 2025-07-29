@@ -124,6 +124,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Authenticator.cpp" />
+    <ClCompile Include="battle.cpp" />
     <ClCompile Include="Chronicles_of_Arithon.cpp" />
     <ClCompile Include="EventGenerator.cpp" />
     <ClCompile Include="FileManager.cpp" />
@@ -131,6 +132,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Authenticator.h" />
+    <ClInclude Include="battle.h" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="globals.h" />
   </ItemGroup>
