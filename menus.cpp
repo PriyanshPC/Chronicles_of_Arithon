@@ -26,8 +26,8 @@ void chroniclesOfArithon() {
 
 	else {
 		cout << "Found Player save: " << file.readUsername();
-		cout << ", would you like to use the existing save file or start new game?" << endl;
-		cout << "(starting a new game will overwrite your existing save file)" << endl;
+		cout << ", would you like to use this save file or start new game?" << endl;
+		cout << "(starting a new game will overwrite your existing save file)\n" << endl;
 
 		cout << "1. Use existing save\n2. Create New\n\nChoose: ";
 		int choice;
@@ -66,6 +66,7 @@ void chroniclesOfArithon() {
 		cout << "Hi, " << player.getName() << endl;
 		cout << "Game Should Start Here" << endl;
 	
+		startBattle();
 	}
 
 	

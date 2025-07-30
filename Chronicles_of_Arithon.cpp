@@ -36,36 +36,7 @@ int main()
     default:
         perror("Invalid entry");
         exit(EXIT_FAILURE);
-    }
-      
-    cout << file.readPassword() << endl;
-
-    string temp;
-    cout << "enter Password: ";
-    cin >> temp;
-    if (file.checkPassword(temp)) {
-        cout << "\nlogged in!" << endl;
-    }
-
-    else {
-        cout << "Wrong password" << endl;
-        return 1;
-    }
-         
-   // file.loadFile();
-
-    playerStats player;
-    file.saveFile(player);
-
-    
-    // *** BATTLE *** //
-
-    cout << "*** BATTLE TIME ***\n" << endl;
-    Fighter plyr("player");
-    CompFighter comp("Beast");
-
-    battle battleOne;
-    battleOne.Fight(plyr, comp);
+    } 
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

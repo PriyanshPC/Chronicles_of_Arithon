@@ -162,3 +162,6 @@ public:
 		cout << "\n Fight Over!" << endl;
 	}
 };
+
+
+void startBattle();
