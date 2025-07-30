@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include "Authenticator.h"
+#include "globals.h"
 
 #define FILENAME "filesave.dat"
 
@@ -108,7 +109,12 @@ public:
 			ofstream file(fileName, ios::app); // open file with append (do not overwrite);
 			file << printThis;
 			file.close(); // Close file
-			cout << "File Updated" << endl;
+			Arithon::lineBreak(TWO);
+			Arithon::line();
+			cout << "*** File Updated ***" << endl;
+			Arithon::line();
+			Arithon::lineBreak(TWO);
+		
 		}
 	}
 
@@ -119,7 +125,12 @@ public:
 		file << getStoryLocation(player) << endl; // line 3
 		file << getItem(player) << endl; // line 4
 		file.close(); // Close file
-		cout << "File Updated" << endl;
+		
+		Arithon::lineBreak(TWO);
+		Arithon::line();
+		cout << "*** File Updated ***" << endl;
+		Arithon::line();
+		Arithon::lineBreak(TWO);
 	}
 
 	void readFromFile() {

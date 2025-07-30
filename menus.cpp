@@ -70,6 +70,8 @@ void chroniclesOfArithon() {
 		cout << "Hi, " << player.getName() << endl;
 		Arithon::line();
 
+		startBattle();
+
 		file.saveFile(player);
 
 	}
