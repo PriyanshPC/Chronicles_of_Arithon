@@ -1,4 +1,5 @@
 #pragma once
+
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -60,3 +61,31 @@ public:
 	string getLoggedInUser() const;
 	vector<string> getInputArguments() const;
 };
+
+
+class user {
+private:
+	string username;
+	string encryptedPassword;
+
+public:
+	user() : username(""), encryptedPassword("") {}
+	user(string name, string pass) : username(name), encryptedPassword(pass) {}
+
+	string getUsername() {
+		return username;
+	}
+
+	string getPassword() {
+		return encryptedPassword;
+	}
+
+	void setUsername(string username) {
+		this->username = username;
+	}
+
+	void setPassword(string password) {
+		this->encryptedPassword = password;
+	}
+};
+

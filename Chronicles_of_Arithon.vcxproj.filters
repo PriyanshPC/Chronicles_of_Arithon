@@ -30,12 +30,24 @@
     <ClCompile Include="FileManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="battle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FileManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Authenticator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="globals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Authenticator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="battle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <fstream>
 #include "FileManager.h"
@@ -127,3 +128,4 @@ string getStoryLocation(playerStats player) {
 string getItem(playerStats player) {
 	return player.getItem();
 }
+

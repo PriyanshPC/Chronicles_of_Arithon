@@ -1,6 +1,7 @@
 // Chronicles_of_ Arithon.cpp : This file contains the 'main' function. Program execution begins and ends there.
 #include <iostream>
 #include "FileManager.h"
+#include "battle.h"
 #include "Authenticator.h"
 using namespace std;
 
@@ -50,6 +51,14 @@ int main(int argCount, char** argVector)
 			cout << "Logged in user = " << AuthInstant.getLoggedInUser() << endl :
 			cout << "No one is logged in" << endl;
 	}
-	
-	return 0;
+
+    /*
+    cout << "*** BATTLE TIME ***\n" << endl;
+    Fighter plyr("player");
+    CompFighter comp("Beast");
+
+    battle battleOne; 
+    battleOne.Fight(plyr, comp);
+    */
+return 0;
 }
