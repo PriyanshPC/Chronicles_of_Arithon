@@ -192,7 +192,7 @@ public:
 
 
 	bool checkPassword(string temp) {
-		return temp == readPassword();
+		return temp == decrypt(readPassword());
 	}
 
 	user readCredentials() {

@@ -4,6 +4,10 @@
 
 using namespace std;
 
+string encrypt(const string& input);
+string decrypt(const string& input);
+
+
 class user {
 private:
 	string username;
@@ -11,7 +15,9 @@ private:
 
 public:
 	user() : username(""), encryptedPassword("") {}
-	user(string name, string pass) : username(name), encryptedPassword(pass) {}
+	user(string name, string pass) : username(name) {
+		encryptedPassword = encrypt(pass);
+	}
 
 	string getUsername() {
 		return username;
@@ -26,6 +32,7 @@ public:
 	}
 
 	void setPassword(string password) {
-		this->encryptedPassword = password;
+		this->encryptedPassword = encrypt(password);
 	}
+
 };

@@ -4,6 +4,7 @@
 
 using namespace std;
 
+
 void newUser(playerStats& player) {
 	string username, password;
 
