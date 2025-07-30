@@ -15,7 +15,7 @@ void newUser(playerStats& player) {
 	cin >> password;
 
 	player.usr.setUsername(username);
-	player.usr.setPassword(password);
+	player.usr.setNewPassword(password);
 	player.setItem("None");
 	player.setLocation("Beginning");
 }

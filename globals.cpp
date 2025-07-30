@@ -24,12 +24,12 @@ namespace Arithon {
 		cout << "==================================================" << endl;
 	}
 
-	void loading() {
+	void loading(long long time) {
 		cout << "Loading";
-		Arithon::sleep(SLEEP_ONE);
+		Arithon::sleep(time);
 		for (int i = 0; i < 3; i++) {
 			cout << ".";
-			Arithon::sleep(SLEEP_ONE);
+			Arithon::sleep(time);
 		}
 		
 	}

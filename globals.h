@@ -1,6 +1,7 @@
 #pragma once
 
 #define SLEEP_ONE 1 //1 second sleep
+#define SLEEP_TWO 2 //1 second sleep
 #define SLEEP_THREE 3 //3 second sleep
 #define SLEEP_FIVE 5 //5 second sleep
 
@@ -15,7 +16,7 @@ namespace Arithon {
 	void Break();
 	void sleep(long long time);
 	void line();
-	void loading();
+	void loading(long long time);
 }
 
 int randomNumber(int min, int max);

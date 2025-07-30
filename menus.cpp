@@ -7,11 +7,14 @@
 
 using namespace std;
 
-void chroniclesOfArithon() {
+void intro() {
 	cout << "*** Welcome to Chronicles of Arithon ***" << endl;
 	Arithon::line();
-	Arithon::loading();
-	Arithon::lineBreak(THREE);
+	Arithon::loading(SLEEP_ONE);
+	Arithon::lineBreak(TWO);
+}
+void chroniclesOfArithon() {
+	intro();
 
 	FileSystem file;
 	playerStats player;
@@ -25,13 +28,13 @@ void chroniclesOfArithon() {
 	}
 
 	else {
-		cout << "Found Player save: " << file.readUsername();
-		cout << ", would you like to use this save file or start new game?" << endl;
+		cout << "Found Player save: " << file.readUsername() << endl;
+		cout << "Would you like to use this save file or start new game?" << endl;
 		cout << "(starting a new game will overwrite your existing save file)\n" << endl;
 
 		cout << "1. Use existing save\n2. Create New\n\nChoose: ";
+		
 		int choice;
-
 		cin >> choice;
 		string pass;
 
@@ -41,6 +44,7 @@ void chroniclesOfArithon() {
 			
 			cout << "Enter Your Password: ";
 			cin >> pass;
+			
 			if(file.checkPassword(pass)){
 				file.loadFile(player);
 			}
@@ -64,10 +68,10 @@ void chroniclesOfArithon() {
 		}
 
 		cout << "Hi, " << player.getName() << endl;
-		cout << "Game Should Start Here" << endl;
-	
-		startBattle();
-	}
+		Arithon::line();
 
-	
+		file.saveFile(player);
+
+	}
 }
+

@@ -1,42 +1,12 @@
 // Chronicles_of_Arithon.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
 
 #include <iostream>
 #include "menus.h"
-#include "FileManager.h"
-#include "battle.h"
 
-using namespace std;
+int main() {
 
-int main()
-{
     chroniclesOfArithon();
-      
-    return 0;
-
-
-    FileSystem file;
-
-    if (!file.checkForFile()) { // if file is not found
-        exit(EXIT_FAILURE); // exit with error
-    }
-
-    cout << "We have a save file named: " << file.readUsername() << endl;
-    cout << " Would you like to use this File? (Y/N): ";
-
-    char answer;
-    cin >> answer;
-    
-    switch (tolower(answer)) {
-    case 'y':
-        break;
-    case 'n':
-        cout << "Ok Bye!";
-        return 0;
-    default:
-        perror("Invalid entry");
-        exit(EXIT_FAILURE);
-    } 
+    exit(EXIT_SUCCESS);
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

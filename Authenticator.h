@@ -31,8 +31,12 @@ public:
 		this->username = username;
 	}
 
-	void setPassword(string password) {
+	void setNewPassword(string password) {
 		this->encryptedPassword = encrypt(password);
+	}
+
+	void setPassword(string password) {
+		this->encryptedPassword = password;
 	}
 
 };
