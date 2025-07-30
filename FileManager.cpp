@@ -4,6 +4,20 @@
 
 using namespace std;
 
+void newUser(playerStats& player) {
+	string username, password;
+
+	cout << "Enter Username: ";
+	cin >> username;
+
+	cout << "\nEnter Password: ";
+	cin >> password;
+
+	player.usr.setUsername(username);
+	player.usr.setPassword(password);
+	player.setItem("None");
+	player.setLocation("Beginning");
+}
 
 string getUsername(playerStats player) {
 	return player.getName();

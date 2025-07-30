@@ -58,6 +58,8 @@ public:
 };
 
 
+void newUser(playerStats& player);
+
 string getUsername(playerStats player);
 string getPassword(playerStats player);
 string getStoryLocation(playerStats player);

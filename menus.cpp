@@ -20,24 +20,52 @@ void chroniclesOfArithon() {
 	if (!file.checkForFile()) {
 		cout << "There are no save files, starting a new game." << endl;
 		file.loadFile(player);
-		string username, password;
-
-		cout << "Enter Username: ";
-		cin >> username;
-
-		cout << "\nEnter Password: ";
-		cin >> password;
-
-		player.usr.setUsername(username);
-		player.usr.setPassword(password);
-		player.setItem("None");
-		player.setLocation("Beginning");
+		newUser(player);
 		file.saveFile(player);
 	}
 
 	else {
-		file.loadFile(player);
-		cout << "Found Player save: " << player.getName();
+		cout << "Found Player save: " << file.readUsername();
+		cout << ", would you like to use the existing save file or start new game?" << endl;
+		cout << "(starting a new game will overwrite your existing save file)" << endl;
+
+		cout << "1. Use existing save\n2. Create New\n\nChoose: ";
+		int choice;
+
+		cin >> choice;
+		string pass;
+
+		switch (choice) {
+		case 1:
+			Arithon::lineBreak(TWO);
+			
+			cout << "Enter Your Password: ";
+			cin >> pass;
+			if(file.checkPassword(pass)){
+				file.loadFile(player);
+			}
+			else {
+				perror("ERROR: Password Incorrect... Exiting.");
+				Arithon::sleep(SLEEP_THREE);
+				exit(EXIT_FAILURE);
+			}
+			
+			break;
+
+		case 2:
+			newUser(player);
+			file.saveFile(player);
+			break;
+
+		default:
+			perror("ERROR: Invalid Entry... Exiting.");
+			Arithon::sleep(SLEEP_THREE);
+			exit(EXIT_FAILURE);
+		}
+
+		cout << "Hi, " << player.getName() << endl;
+		cout << "Game Should Start Here" << endl;
+	
 	}
 
 	
