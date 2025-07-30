@@ -13,11 +13,14 @@
 
 using namespace std;
 
-Authenticator::Authenticator(FileIO& fileIO, int& argCount, char** argVector) {
+Authenticator::Authenticator(FileSystem& fileIO, int& argCount, char** argVector) {
 
-	cout << "[Authenticator] Credential map initialized.\n";
 	loadUserCredentials(fileIO);
 
+	if (DebugMode == true) {
+		cout << "[Authenticator] Credential map initialized.\n";
+	}
+	
 	// Process command line arguments
 	processInputArguments(argCount, argVector);
 
@@ -81,17 +84,17 @@ void Authenticator::processInputArguments(int argCount, char** argVector) {
 		else if (argVector[i] == string("-p") && i + 1 < argCount) {
 			inputPassword = argVector[++i];
 		}
-		else if (argVector[i] == string("-new")) {
+		else if (argVector[i] == string("-newuser")) {
 			isNewUser = true;
 		}
 		else if (argVector[i] == string("-debug")) {
 			DebugMode = true;
 		}
 		else if (argVector[i] == string("-help")) {
-			cout << "Usage: " << argVector[0] << " -u <username> -p <password> [-new] [-debug]" << endl;
+			cout << "Usage: " << argVector[0] << " -u <username> -p <password> [-newuser] [-debug]" << endl;
 			cout << "-u <username> : Specify the username" << endl;
 			cout << "-p <password> : Specify the password" << endl;
-			cout << "-new          : Create a new user" << endl;
+			cout << "-newuser          : Create a new user" << endl;
 			cout << "-debug        : Enable debug mode" << endl;
 			cout << "-help         : Display this help message" << endl;
 			exit(0);
@@ -214,12 +217,7 @@ bool Authenticator::validateCredentials(const string& username, const string& pa
 	}
 }
 
-bool Authenticator::userExists(const string& username) {
-	// Check if the user already exists in the credentials map
-	return userCredentials.find(username) != userCredentials.end();
-}
-
-bool Authenticator::logIn(FileIO& fileIO)
+bool Authenticator::logIn(FileSystem& fileIO)
 {
 	//if new user is requested, then create a new user
 	//	Check if the username exists 
@@ -288,10 +286,10 @@ bool Authenticator::createNewUser()
 	//if password is not valid then print error message and return false
 	if (isValidPassword(inputPassword) == false) {
 		cout << "Error: Invalid password" << endl;
-		cout << "Minimum length " << MIN_PASSWORD_LENGTH << endl;
-		cout << "Both Uppercase and Lowercase letters needed" << endl;
-		cout << "At least one digit needed" << endl;
-		cout << "At least one special character needed" << endl;
+		cout << "\tMinimum length " << MIN_PASSWORD_LENGTH << endl;
+		cout << "\tBoth Uppercase and Lowercase letters needed" << endl;
+		cout << "\tAt least one digit needed" << endl;
+		cout << "\tAt least one special character needed" << endl;
 		return false;
 	}
 	userCredentials[inputUserName] = encryptData(inputPassword);
@@ -299,7 +297,7 @@ bool Authenticator::createNewUser()
 	return true;
 }
 
-void Authenticator::storeNewUser(FileIO& fileIO)
+void Authenticator::storeNewUser(FileSystem& fileIO)
 {
 	fileIO.addCredential(inputUserName, encryptData(inputPassword));
 }

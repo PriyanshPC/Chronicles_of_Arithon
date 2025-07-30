@@ -1,11 +1,30 @@
 // Chronicles_of_ Arithon.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
 #include "FileManager.h"
 #include "Authenticator.h"
-
 using namespace std;
+
+/**-----------------------------------------------------------------------------------------------------
+* Main function to demonstrate the usage of the Authenticator class
+* The fake File IO function loads these fictitious user credentials
+* use any of these combinations to log in
+* 
+* alice			password123
+* bob			password456
+* joy			Maple234
+* Robin123		flower235
+* skinchild		bobcatOzi
+* furbaby		password254
+* 
+* Use Ctrl+Shift+B to build the project and run the executable with command line arguments
+* Example: Chronicles_of_Arithon.exe -u alice -p password123
+* 
+* if you want to add a new user
+* Example: Chronicles_of_Arithon.exe -u newUsername -p newPassword -new
+* 
+* if you want to see the help message that explains the command line options
+* Example: Chronicles_of_Arithon.exe -help
+-----------------------------------------------------------------------------------------------------*/
 
 int main(int argCount, char** argVector)
 {
@@ -26,16 +45,11 @@ int main(int argCount, char** argVector)
 	// We have to change it here
 	Authenticator AuthInstant(fileIOInstance, argCount, argVector);
 
+	if (AuthInstant.isDebugMode()) {
+		AuthInstant.isLoggedIn() ?
+			cout << "Logged in user = " << AuthInstant.getLoggedInUser() << endl :
+			cout << "No one is logged in" << endl;
+	}
+	
 	return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

@@ -43,14 +43,14 @@ class Authenticator
 	// This also identifies if the -newuser flag is set and if debugmode is requested
 	void processInputArguments(int argCount, char** argVector);
 
-	void loadUserCredentials(FileIO& fileIO);
+	void loadUserCredentials(FileSystem& fileIO);
 	bool validateCredentials(const string& username, const string& password);
-	bool logIn(FileIO& fileIO);
+	bool logIn(FileSystem& fileIO);
 	bool createNewUser();
-	void storeNewUser(FileIO& fileIO);
+	void storeNewUser(FileSystem& fileIO);
 	
 public:
-	Authenticator(FileIO& fileIO, int& argCount, char** argVector);
+	Authenticator(FileSystem& fileIO, int& argCount, char** argVector);
 	~Authenticator();
 	
 	void toggleDebugMode();
