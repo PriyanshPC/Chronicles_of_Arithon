@@ -128,6 +128,8 @@
     <ClCompile Include="Chronicles_of_Arithon.cpp" />
     <ClCompile Include="EventGenerator.cpp" />
     <ClCompile Include="FileManager.cpp" />
+    <ClCompile Include="globals.cpp" />
+    <ClCompile Include="menus.cpp" />
     <ClCompile Include="StoryEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +137,7 @@
     <ClInclude Include="battle.h" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="globals.h" />
+    <ClInclude Include="menus.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

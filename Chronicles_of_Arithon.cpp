@@ -2,13 +2,18 @@
 //
 
 #include <iostream>
+#include "menus.h"
 #include "FileManager.h"
+#include "battle.h"
 
 using namespace std;
 
 int main()
 {
-    std::cout << "GAME START!" << endl;
+    chroniclesOfArithon();
+      
+    return 0;
+
 
     FileSystem file;
 
@@ -47,13 +52,20 @@ int main()
         return 1;
     }
          
-    file.loadFile();
+   // file.loadFile();
 
     playerStats player;
     file.saveFile(player);
 
     
+    // *** BATTLE *** //
 
+    cout << "*** BATTLE TIME ***\n" << endl;
+    Fighter plyr("player");
+    CompFighter comp("Beast");
+
+    battle battleOne;
+    battleOne.Fight(plyr, comp);
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

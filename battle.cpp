@@ -3,8 +3,11 @@
 
 using namespace std;
 
-void Break() {
-	cout << "\n\nPress Enter to Continue ..." << endl;
-	cin.ignore();
-	cin.get();
+random_device rd;
+std::mt19937 gen(rd());
+
+int randomNumber(int min, int max) {
+	uniform_int_distribution<int> dist(min, max);
+	return dist(gen);
 }
+

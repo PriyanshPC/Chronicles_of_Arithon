@@ -17,11 +17,12 @@ enum fileLine {
 
 class playerStats {
 private:
-	user usr;
 	string storyLocation;
 	string item;
 
 public:
+	user usr;
+
 	playerStats() :storyLocation("Beginning"), item("None") {
 		usr.setPassword("password");
 		usr.setUsername("username");
@@ -46,6 +47,14 @@ public:
 	string getItem() {
 		return item;
 	}
+
+	void setLocation(string location) {
+		storyLocation = location;
+	}
+
+	void setItem(string item) {
+		this->item = item;
+	}
 };
 
 
@@ -61,14 +70,19 @@ private:
 public:
 	FileSystem() : fileName(FILENAME) {}
 
-	void loadFile() {
+	void loadFile(playerStats& player) {
 		if (!checkForFile()) { // If file does not exist
 			ofstream file(fileName); // Create File
 			file.close(); // Close file
-			cout << "File " << fileName << " Created" << endl; // Print status
+			cout << "File '" << fileName << "' Created" << endl; // Print status
 		}
 		else { // If file does exist
-			cout << "File " << fileName << " Found" << endl; // Print status
+			cout << "File '" << fileName << "' Found" << endl; // Print status
+
+			player.usr.setUsername(readUsername());
+			player.usr.setPassword(readPassword());
+			player.setItem(readItem());
+			player.setLocation(readLocation());
 		}
 	}
 
@@ -141,6 +155,37 @@ public:
 			perror("ERROR: File could not be found...\n");
 		}
 		return password;
+	}
+
+	string readItem() {
+		string item;
+		ifstream file(FILENAME);
+		if (file.is_open()) {
+			getline(file, item);
+			getline(file, item);
+			getline(file, item);
+			file.close();
+		}
+		else {
+			perror("ERROR: File could not be found...\n");
+		}
+		return item;
+	}
+
+	string readLocation() {
+		string location;
+		ifstream file(FILENAME);
+		if (file.is_open()) {
+			getline(file, location);
+			getline(file, location);
+			getline(file, location);
+			getline(file, location);
+			file.close();
+		}
+		else {
+			perror("ERROR: File could not be found...\n");
+		}
+		return location;
 	}
 
 
