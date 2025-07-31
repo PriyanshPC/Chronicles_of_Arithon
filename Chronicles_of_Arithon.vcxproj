@@ -129,6 +129,12 @@
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="StoryEngine.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\stroryData.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="PlayerState.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
