@@ -4,10 +4,9 @@
 #include "Authenticator.h"
 #include "globals.h"
 
-#define FILENAME "filesave.dat"
+#define FILENAME "filesaves.dat"
 
 using namespace std;
-
 
 enum fileLine {
 	userNameFileLine = 1,
@@ -59,7 +58,7 @@ public:
 };
 
 
-void newUser(playerStats& player);
+void newUser(playerStats& player, char** argv);
 
 string getUsername(playerStats player);
 string getPassword(playerStats player);
@@ -71,7 +70,9 @@ private:
 	string fileName;
 
 public:
-	FileSystem() : fileName(FILENAME) {}
+	FileSystem(string name){
+		fileName = name + ".dat";
+	}
 
 	void loadFile(playerStats& player) {
 		if (!checkForFile()) { // If file does not exist
@@ -145,7 +146,7 @@ public:
 
 	string readUsername() {
 		string username;
-		ifstream file(FILENAME);
+		ifstream file(fileName);
 		if (file.is_open()) {
 			getline(file, username);
 			file.close();
@@ -158,7 +159,7 @@ public:
 		
 	string readPassword() {
 		string password;
-		ifstream file(FILENAME);
+		ifstream file(fileName);
 		if (file.is_open()) {
 			getline(file, password);
 			getline(file, password);
@@ -172,7 +173,7 @@ public:
 
 	string readItem() {
 		string item;
-		ifstream file(FILENAME);
+		ifstream file(fileName);
 		if (file.is_open()) {
 			getline(file, item);
 			getline(file, item);
@@ -187,7 +188,7 @@ public:
 
 	string readLocation() {
 		string location;
-		ifstream file(FILENAME);
+		ifstream file(fileName);
 		if (file.is_open()) {
 			getline(file, location);
 			getline(file, location);

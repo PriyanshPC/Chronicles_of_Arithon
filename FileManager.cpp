@@ -5,17 +5,10 @@
 using namespace std;
 
 
-void newUser(playerStats& player) {
-	string username, password;
+void newUser(playerStats& player, char** argv) {
 
-	cout << "Enter Username: ";
-	cin >> username;
-
-	cout << "\nEnter Password: ";
-	cin >> password;
-
-	player.usr.setUsername(username);
-	player.usr.setNewPassword(password);
+	player.usr.setUsername(argv[0]);
+	player.usr.setNewPassword(argv[1]);
 	player.setItem("None");
 	player.setLocation("Beginning");
 }

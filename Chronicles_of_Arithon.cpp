@@ -3,9 +3,14 @@
 #include <iostream>
 #include "menus.h"
 
-int main() {
+int main(int argc, char** argv) {
 
-    chroniclesOfArithon();
+    const char* args[2] = { "Rami", "password" };
+    argc = 2;
+    argv = const_cast<char**>(args);
+
+
+    chroniclesOfArithon(argc, argv);
     exit(EXIT_SUCCESS);
 }
 

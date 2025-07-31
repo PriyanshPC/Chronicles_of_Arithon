@@ -163,5 +163,4 @@ public:
 	}
 };
 
-
 void startBattle();

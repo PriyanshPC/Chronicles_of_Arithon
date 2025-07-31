@@ -13,17 +13,21 @@ void intro() {
 	Arithon::loading(SLEEP_ONE);
 	Arithon::lineBreak(TWO);
 }
-void chroniclesOfArithon() {
+void chroniclesOfArithon(int argc, char** argv) {
 	intro();
 
-	FileSystem file;
-	playerStats player;
+	if (argc < 2) {
+		cout << "ERROR: NOT ENOUGH ARGUMENTS" << endl;
+		exit(EXIT_FAILURE);
+	}
 
+	FileSystem file(argv[0]);
+	playerStats player;
 
 	if (!file.checkForFile()) {
 		cout << "There are no save files, starting a new game." << endl;
 		file.loadFile(player);
-		newUser(player);
+		newUser(player, argv);
 		file.saveFile(player);
 	}
 
@@ -32,20 +36,16 @@ void chroniclesOfArithon() {
 		cout << "Would you like to use this save file or start new game?" << endl;
 		cout << "(starting a new game will overwrite your existing save file)\n" << endl;
 
-		cout << "1. Use existing save\n2. Create New\n\nChoose: ";
+		cout << "1. Use existing save\n2. Create New\n3. Exit\n\nChoose: ";
 		
 		int choice;
 		cin >> choice;
-		string pass;
 
 		switch (choice) {
 		case 1:
 			Arithon::lineBreak(TWO);
 			
-			cout << "Enter Your Password: ";
-			cin >> pass;
-			
-			if(file.checkPassword(pass)){
+			if(file.checkPassword(argv[1])) {
 				file.loadFile(player);
 			}
 			else {
@@ -57,9 +57,11 @@ void chroniclesOfArithon() {
 			break;
 
 		case 2:
-			newUser(player);
+			newUser(player, argv);
 			file.saveFile(player);
 			break;
+		case 3:
+			exit(EXIT_SUCCESS);
 
 		default:
 			perror("ERROR: Invalid Entry... Exiting.");
@@ -67,13 +69,13 @@ void chroniclesOfArithon() {
 			exit(EXIT_FAILURE);
 		}
 
-		cout << "Hi, " << player.getName() << endl;
-		Arithon::line();
-
-		startBattle();
-
-		file.saveFile(player);
-
 	}
+
+	cout << "Hi, " << player.getName() << endl;
+	Arithon::line();
+
+	startBattle();
+
+	file.saveFile(player);
 }
 

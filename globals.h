@@ -8,7 +8,6 @@
 
 enum Lines{ONE = 1, TWO, THREE, FOUR, FIVE};
 
-
 using namespace std;
 
 namespace Arithon {

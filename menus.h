@@ -1,4 +1,4 @@
 #pragma once
 
-void chroniclesOfArithon();
+void chroniclesOfArithon(int argc, char** argv);
 void intro();
