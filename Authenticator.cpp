@@ -7,7 +7,6 @@
 #include <sstream>
 #include <unordered_map>
 #include <openssl/sha.h>
-
 #include "Authenticator.h"
 #include "FileManager.h"
 

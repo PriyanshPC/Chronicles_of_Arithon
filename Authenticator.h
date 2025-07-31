@@ -1,5 +1,4 @@
 #pragma once
-
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -7,8 +6,11 @@
 #include <ctime>
 #include <iomanip>
 #include <sstream>
+#include <string>
 #include <unordered_map>
-#include "FileManager.h"
+
+// Forward declaration of FileSystem to resolve the circular dependency
+class FileSystem;
 
 #define MAX_USERNAME_LENGTH 20
 #define MIN_USERNAME_LENGTH 3
@@ -63,29 +65,4 @@ public:
 };
 
 
-class user {
-private:
-	string username;
-	string encryptedPassword;
-
-public:
-	user() : username(""), encryptedPassword("") {}
-	user(string name, string pass) : username(name), encryptedPassword(pass) {}
-
-	string getUsername() {
-		return username;
-	}
-
-	string getPassword() {
-		return encryptedPassword;
-	}
-
-	void setUsername(string username) {
-		this->username = username;
-	}
-
-	void setPassword(string password) {
-		this->encryptedPassword = password;
-	}
-};
 
