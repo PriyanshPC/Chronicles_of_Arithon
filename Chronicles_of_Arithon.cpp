@@ -1,20 +1,36 @@
-// Chronicles_of_Arithon.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
+#include "Authenticator.h"
+#include "StoryEngine.h"
 
-int main()
-{
-    std::cout << "Hello World!\n";
+using namespace std;
+
+int main(int argc, char* argv[]) {
+    UserData user;
+    user.playerState = new PlayerState();
+
+    // Parse command-line arguments (create or login)
+    if (!processArguments(argc, argv, user)) {
+        delete user.playerState;
+        return 1;
+    }
+
+    bool success = false;
+
+    if (user.isNewUser) {
+        success = createUser(user);
+    }
+    else {
+        success = loginUser(user);
+    }
+
+    if (!success) {
+        cout << "\nAuthentication failed! Press try again";
+        delete user.playerState;
+        return 1;
+    }
+
+    showGameWindow(user);
+
+    delete user.playerState;
+    return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

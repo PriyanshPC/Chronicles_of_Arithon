@@ -127,13 +127,17 @@
     <ClCompile Include="Chronicles_of_Arithon.cpp" />
     <ClCompile Include="EventGenerator.cpp" />
     <ClCompile Include="FileManager.cpp" />
+    <ClCompile Include="PlayerState.cpp" />
     <ClCompile Include="StoryEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\stroryData.json" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Authenticator.h" />
+    <ClInclude Include="FileManager.h" />
     <ClInclude Include="PlayerState.h" />
+    <ClInclude Include="StoryEngine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

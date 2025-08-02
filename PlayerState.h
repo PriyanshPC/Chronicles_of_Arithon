@@ -1,43 +1,45 @@
+#pragma once
+
 #define PLAYERSTATE_H
 
+#include <string>
 
 class PlayerState {
-
 private:
-    int currentChapter;
-    int currentEvent;
+    int chapterNumber;
+    int chapterEvent;
     int health;
-    int currentWeapon;
-    int chapterEventDecisions[5];
-    int previousChapterOutcomes[5];
+    int weapon;
+    int currentEventsDecisions[6];
+    int previousChaptersOutcome[5];
+    int currentDecisionIndex;
+    int outcomeIndex;
 
 public:
-    // Constructor
+
     PlayerState();
 
-    // Getters and Setters
-    int getCurrentChapter() const;
-    void setCurrentChapter(int chapter);
-
-    int getCurrentEvent() const;
-    void setCurrentEvent(int event);
-
+    int getChapterNumber() const;
+    int getChapterEvent() const;
     int getHealth() const;
-    void setHealth(int health);
+    int getWeapon() const;
+    int getCurrentDecision(int index) const;
+    int getPreviousOutcome(int index) const;
+    int getCurrentDecisionIndex() const;
+    int getOutcomeIndex() const;
 
-    int getCurrentWeapon() const;
-    void setCurrentWeapon(const int& weapon);
+    void setChapterNumber(int chapter);
+    void setChapterEvent(int event);
+    void setHealth(int hp);
+    void setWeapon(int weaponType);
+    void setCurrentDecision(int index, int decision);
+    void setPreviousOutcome(int index, int outcome);
+    void setCurrentDecisionIndex(int index);
+    void setOutcomeIndex(int index);
 
-    void getChapterEventDecisions(int decisions[], int size) const;
-    void setChapterEventDecisions(const int decisions[], int size);
-
-    void getPreviousChapterOutcomes(int outcomes[], int size) const;
-    void setPreviousChapterOutcomes(const int outcomes[], int size);
-
-    // State Management
-    void updateState(int chapter, int event, int health, const int& weapon,
-        const int decisions[], int decisionSize,
-        const int outcomes[], int outcomeSize);
-    void retrieveState();
-
+    void resetCurrentDecisions();
+    void addCurrentDecision(int decision);
+    void addPreviousOutcome(int outcome);
+    void resetToDefault();
+    std::string serialize() const;
 };
