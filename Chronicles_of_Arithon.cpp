@@ -39,6 +39,8 @@ int main(int argCount, char** argVector)
 	// If the author of FileSystem module decides to change the FileSystem class 
 	// We have to change it here
 	FileSystem fileIOInstance;
+	//fileIOInstance.addCredential; to add new user to the registration list
+	//fileIOInstance.readCredentialTable; to read the registration list and give that list to auth module
 
 	// Create an instance of the Authorization class:
 	// The constructor takes in the FileSystem instance to access user credentials

@@ -1,10 +1,8 @@
-
 #include <iostream>
 #include <fstream>
 #include "FileManager.h"
 #include <vector>
 #include <string>
-
 using namespace std;
 
 // ------------------------------------ Start of the section added for Authenticator Module -------------------------
@@ -16,8 +14,7 @@ using namespace std;
 
 void FileSystem::fakeFileIO() {
 	// This is just a mock implementation to simulate the credential table.
-	// This function is a placeholder to simulate file I/O operations.
-	// It can be used for testing purposes without actual file operations.
+	// It is only written for testing purposes. This will be deleted when the actual implementation is done.
 	credentialList.push_back({ "alice", "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f" });      //password123
 	credentialList.push_back({ "bob", "c6ba91b90d922e159893f46c387e5dc1b3dc5c101a5a4522f03b987177a24a91" });        //password456
 	credentialList.push_back({ "joy", "065433f78cb6e524d1291a9abe4604abe2b5e75ad7ac45c92d1f072694420b6c" });        //Maple234
@@ -27,33 +24,37 @@ void FileSystem::fakeFileIO() {
 	cout << "[FileSystem] Loaded mock credential list." << endl;
 }
 
-// This function returns the credential table to the caller
-// This can be left as it is for actual implementation
+// This function will collect all username and password pairs
+// This return type is a LIST of User datatype
+// User datatype is defined as a structure of two strings (username and encryptedPassword)
+// This function returns the member data credentialList
+// 
+// When The FileSystem Class loads, the constructor should collect all the username and password
+// and populate the 'credentialList' variable.
+
 vector<User> FileSystem::readCredentialTable() {
-    cout << "[FileSystem] readCredentialTable() called." << endl;
-    return credentialList;
+	return credentialList;
 }
 
 
-// This function adds a new credential to the credential table
-// For the actual implementation, additional code is needed to properly store the updated user information to appropriate files
+// This function will be called by Authenticator module
+// This will add the new user information to the 'credentialList' variable
+// How that information will be stored for future use will be determined by the FILE IO module
+
 bool FileSystem::addCredential(const std::string& username, const std::string& hashedPassword) {
-    credentialList.push_back({ username, hashedPassword });
+    
+	//Adding new user to 'credentialList'
+	credentialList.push_back({ username, hashedPassword });
 
-    // Simulated writing to a file by printing to console
-    cout << "[FileSystem] wrote the info to the file: " << username << " -> " << hashedPassword << endl;
-
-    // For actual implementation additional code is needed here to write to a file.
-    // Return true to indicate success
-    return true;
+	//Add code here to store updated credentialList to file
+	return true;
 }
 // ------------------------------------ End of the section added for Authenticator Module -------------------------
 
 
+//This is the constructor of the FileSystem class
 FileSystem::FileSystem() : fileName(FILENAME) {
-	// Replace this section with actual file reading logic when implemented.
-	// The actual implementation would read from a file. Using code that are yet to be implemented in the FILEIO class.
-	fakeFileIO(); // Load mock data for testing purposes
+	fakeFileIO(); // Load mock data for testing purposes only
 }
 
 void FileSystem::loadFile() {
