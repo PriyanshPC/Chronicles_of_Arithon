@@ -47,8 +47,15 @@
     <ClInclude Include="StoryEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EventGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\stroryData.json" />
+    <None Include="packages.config" />
+    <None Include="storyData.json">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
