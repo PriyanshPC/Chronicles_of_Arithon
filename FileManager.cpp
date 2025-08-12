@@ -5,8 +5,9 @@
 #include <iostream>                       // Include input/output stream for console I/O
 #include <string>                         // Include string class
 #include <sstream>                        // Include string stream for parsing
-#include <algorithm>                      // Include algorithms (e.g., for trimming)
 #include <windows.h>
+
+#include <filesystem>
 
 using namespace std;                      // Use the standard namespace
 
@@ -24,7 +25,7 @@ bool userExists(const string& username) {
 // Saves user data to a file
 bool saveUser(const UserData& user) {
     string filename = getFileName(user.username);                           // Get the filename for the user
-    filesystem::path fullPath = getExecutableDirectory() / filename;        // Making sure full path is there
+    std::filesystem::path fullPath = getExecutableDirectory() / filename;        // Making sure full path is there
 
     ofstream file(fullPath);                                    // Open file for writing
     if (!file.is_open()) {                                      // Check if file opened successfully

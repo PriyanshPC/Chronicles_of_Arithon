@@ -2,7 +2,7 @@
 #define FILEMANAGER_H // Macro guard for additional include protection
 
 #include <string> // Provides the std::string class
-#include <filesystem> // For filesystem operations
+#include <filesystem>
 
 struct UserData; // Forward declaration of UserData structure
 
