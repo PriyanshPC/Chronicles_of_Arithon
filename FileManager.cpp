@@ -1,11 +1,13 @@
 #include "FileManager.h"                  // Include header for file manager declarations
-#include "Authenticator.h"                // Include header for authentication utilities
+#include "GameEngine.h"                     // Include header for authentication utilities
 #include "PlayerState.h"                  // Include header for player state management
 #include <fstream>                        // Include file stream for file I/O
 #include <iostream>                       // Include input/output stream for console I/O
 #include <string>                         // Include string class
 #include <sstream>                        // Include string stream for parsing
-#include <algorithm>                      // Include algorithms (e.g., for trimming)
+#include <windows.h>
+
+#include <filesystem>
 
 using namespace std;                      // Use the standard namespace
 
@@ -22,12 +24,13 @@ bool userExists(const string& username) {
 
 // Saves user data to a file
 bool saveUser(const UserData& user) {
-    string filename = getFileName(user.username); // Get the filename for the user
+    string filename = getFileName(user.username);                           // Get the filename for the user
+    std::filesystem::path fullPath = getExecutableDirectory() / filename;        // Making sure full path is there
 
-    ofstream file(filename);                      // Open file for writing
-    if (!file.is_open()) {                       // Check if file opened successfully
-        cout << "Failed to open file: " << filename << endl; // Print error message
-        return false;                            // Return false if file couldn't be opened
+    ofstream file(fullPath);                                    // Open file for writing
+    if (!file.is_open()) {                                      // Check if file opened successfully
+        cout << "Failed to open file: " << filename << endl;    // Print error message
+        return false;                                           // Return false if file couldn't be opened
     }
 
     file << "Username : " << user.username << "\n";          // Write username to file
@@ -38,16 +41,18 @@ bool saveUser(const UserData& user) {
     return true;                                             // Return true on success
 }
 
-// Helper function to trim leading and trailing spaces from a string
 static inline string trim(const string& s) {
-    size_t start = s.find_first_not_of(" \t");               // Find first non-space/tab character
-    size_t end = s.find_last_not_of(" \t");                  // Find last non-space/tab character
+    size_t start = s.find_first_not_of(" \t");                              // Find first non-space/tab character
+    size_t end = s.find_last_not_of(" \t");                                 // Find last non-space/tab character
     return (start == string::npos) ? "" : s.substr(start, end - start + 1); // Return trimmed string
 }
 
 // Loads user data from a file into a UserData object
 bool loadUser(const string& username, UserData& user) {
-    ifstream file(getFileName(username));                    // Open the user file for reading
+
+    filesystem::path fullPath = getExecutableDirectory() / getFileName(username);
+    cout << "Loading user data for: " << fullPath << endl; // Debug message to indicate loading user data
+    ifstream file(fullPath); // Open the user file for reading
     if (!file.is_open()) return false;                       // Return false if file can't be opened
 
     user.playerState->resetToDefault();                      // Reset player state to default values
@@ -110,4 +115,11 @@ bool loadUser(const string& username, UserData& user) {
 // Deletes the user file for the given username
 bool deleteUser(const string& username) {
     return (remove(getFileName(username).c_str()) == 0);             // Remove file, return true if successful
+}
+
+filesystem::path getExecutableDirectory()
+{
+    char buffer[MAX_PATH];
+    GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    return filesystem::path(buffer).parent_path();
 }

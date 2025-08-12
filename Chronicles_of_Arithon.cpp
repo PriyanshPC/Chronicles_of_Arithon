@@ -1,107 +1,116 @@
-#include <iostream> // Include standard input/output stream library
-#include "Authenticator.h" // Include custom authentication header
-#include "StoryEngine.h"   // Include custom story/game logic header
-
+#include <iostream>                                                         // Include standard input/output stream library
+#include "GameEngine.h"                                                     // Include custom authentication header
+#include "Authenticator.h"                                                  // Include custom authenticator header
 using namespace std; // Use the standard namespace for convenience
 
-int main(int argc, char* argv[]) { // Main entry point; argc/argv for command-line arguments
-    UserData user; // Create a UserData object to store user info
-    user.playerState = new PlayerState(); // Dynamically allocate PlayerState for the user
-
-    bool success = false; // Track authentication or user creation success
-
-    // === CLA branch: Only run if actual arguments provided (besides program name)
-    if (argc > 1) { // If command-line arguments are provided
-        if (!processArguments(argc, argv, user)) { // Parse and validate arguments; update user
-            delete user.playerState; // Clean up allocated memory
-            return 1; // Exit with error code
-        }
-
-        if (user.isNewUser) { // If user is flagged as new
-            success = createUser(user); // Attempt to create a new user profile
-        }
-        else { // Otherwise, existing user
-            success = loginUser(user); // Attempt to log in user
-        }
-
-        if (!success) { // If authentication or creation failed
-            cout << "\nAuthentication failed via CLA. Exiting...\n"; // Inform user
-            delete user.playerState; // Clean up memory
-            return 1; // Exit with error code
-        }
-
-        showGameWindow(user); // Launch the main game window for the user
+bool handleCommandLineLogin(UserData& user, Authenticator& AuthInstance, int argCount, char** argVector)
+{
+    if (!AuthInstance.processInputArguments(argCount, argVector)) {             // Process the command-line arguments
+        cout << "[Main] Command Line Argument Parsing Failed" << endl;           //If processing fails, inform user
+        return false;
     }
-    // === In-game menu for normal users
-    else { // If no command-line arguments, show interactive menu
-        cout << "==============================\n"; // Print game title banner
-        cout << "||  CHRONICLES OF ARITHON  ||\n";
-        cout << "==============================\n\n";
-        cout << "1. Login\n"; // Menu option: Login
-        cout << "2. Create New Profile\n"; // Menu option: Create new user
-        cout << "3. Exit\n"; // Menu option: Exit game
+    user.username = AuthInstance.getUsername();
+    user.password = AuthInstance.getPassword();
+    user.isNewUser = AuthInstance.isNewUserFlag();
 
-        int choice = 0; // Store user's menu choice
-        while (true) { // Loop until valid action is taken
-            cout << "Enter choice: "; // Prompt for menu choice
-            if (!(cin >> choice)) {
-                cout << "Invalid input. Please enter a number.\n";
-                cin.clear(); // reset error flag
-                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // discard bad input
+    if (!AuthInstance.logIn(user)) {                         // If authentication or creation failed
+        cout << "[Main] Command Line Login Failed!!";        // Inform user
+        return false;
+    }
+    return true;
+}
+
+bool handleInteractiveLogin(UserData& user, Authenticator& AuthInstance)
+{
+    int choice = 0;                                                     // Store user's menu choice
+    while (true) {                                                      // Loop until valid action is taken
+        bool success = false;                                           // Reset success flag for each menu iteration
+        showMainMenu();
+        if (!(cin >> choice)) {
+            cout << "Invalid input. Please enter a number.\n";
+            cin.clear(); // reset error flag
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');        // discard bad input
+            continue;
+        }
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        if (choice == 1) {                                      // If user chooses Login (has to be an existing user)
+            cout << "\nEnter Username: ";                       // Prompt for username
+            getline(cin, user.username);                        // Read username
+            cout << "Enter Password: ";                         // Prompt for password
+            getline(cin, user.password);                        // Read password
+            user.isNewUser = false;                             // Mark as existing user
+
+            AuthInstance.setInputVariables(user.username, user.password, user.isNewUser, false);
+            success = AuthInstance.logIn(user); // Attempt to log in using Authenticator
+
+            if (success) {                              // If login succeeded
+                cout << "\nLogin successful!\n";        // Inform user
+                return true;
+            }
+            else {                                              // If login failed
+                cout << "\nLogin failed. Try again.\n";         // Inform user
+            }
+        }
+        else if (choice == 2) {                                 // If user chooses to create new profile
+            user.isNewUser = true;                              // Mark as new user
+
+            // Prompt for new user details
+            cout << "Enter New Username: ";                     // Prompt for new username
+            getline(cin, user.username);                        // Read username
+            cout << "Enter Password: ";                         // Prompt for password
+            getline(cin, user.password);                        // Read password
+            cout << "Confirm Password: ";                       // Prompt for password confirmation
+            string confirm;                                     // Store confirmation input
+            getline(cin, confirm);                              // Read confirmation
+
+            // only set the authenticator variables if the user is creating a new user
+            // and if the confirm password matches the password
+            if (user.password == confirm) {
+                AuthInstance.setInputVariables(user.username, user.password, user.isNewUser, false);
+            }
+            else {
+                cout << "Passwords do not match!! Try again." << endl;
                 continue;
             }
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-            if (choice == 1) { // If user chooses Login
-                cout << "\nEnter Username: "; // Prompt for username
-                getline(cin, user.username); // Read username
-                cout << "Enter Password: "; // Prompt for password
-                getline(cin, user.password); // Read password
-                user.isNewUser = false; // Mark as existing user
-
-                if (loginUser(user)) { // Attempt login
-                    success = true; // Mark success
-                    break; // Exit menu loop
-                }
-                else { // If login failed
-                    cout << "\nLogin failed. Try again.\n"; // Inform user
-                }
+            // Attempt to create a new user using Authenticator
+            // Using Authenticator login function to create a new user
+            success = AuthInstance.logIn(user); // Attempt to log in with new user credentials
+            if (success) {
+                cout << "New user created and logged in." << endl;
+                return true;
             }
-            else if (choice == 2) { // If user chooses to create new profile
-                cout << "Enter New Username: "; // Prompt for new username
-                getline(cin, user.username); // Read username
-                cout << "Enter Password: "; // Prompt for password
-                getline(cin, user.password); // Read password
-                cout << "Confirm Password: "; // Prompt for password confirmation
-                string confirm; // Store confirmation input
-                getline(cin, confirm); // Read confirmation
-
-                if (!isValidInput(user.username, user.password, confirm)) continue; // Validate input; repeat if invalid
-
-                user.isNewUser = true; // Mark as new user
-                if (createUser(user)) { // Attempt to create user
-                    success = true; // Mark success
-                    break; // Exit menu loop
-                }
-                else { // If creation failed
-                    cout << "\nUser creation failed. Try again.\n"; // Inform user
-                }
-            }
-            else if (choice == 3) { // If user chooses to exit
-                cout << "Exiting game.\n"; // Inform user
-                delete user.playerState; // Clean up memory
-                return 0; // Exit program
-            }
-            else { // If input is invalid
-                cout << "\nInvalid input. Try again.\n"; // Inform user
+            else {                                                                  // If creation failed
+                cout << "User creation failed! Try again." << endl;                 // Inform user
             }
         }
-
-        if (success) { // If login or creation succeeded
-            showGameWindow(user); // Launch the main game window
+        else if (choice == 3) {                                                     // If user chooses to exit
+            cout << "Exiting game." << endl;                                              // Inform user
+            return false;
+        }
+        else {                                                                  // If input is invalid
+            cout << "\nInvalid input! Try again." << endl;                            // Inform user
         }
     }
+    return true;
+}
 
-    delete user.playerState; // Clean up allocated PlayerState memory
-    return 0; // Exit program successfully
+int main(int argCount, char** argVector) {                                  // Main entry point; argCount/argVector for command-line arguments
+
+    UserData user;                                                          // Create a UserData object to store user info
+    user.playerState = new PlayerState();                                   // Dynamically allocate PlayerState for the user
+    Authenticator AuthInstance(argCount, argVector);                        // Initialize Authenticator with command-line arguments
+
+    bool success = (argCount > 1)                                           // If command-line arguments are provided
+        ? handleCommandLineLogin(user, AuthInstance, argCount, argVector)   // Attempt command-line login or user creation
+        : handleInteractiveLogin(user, AuthInstance);                       // Otherwise, handle interactive login
+
+    // === Launch game window if login or creation succeeded
+    if (success) {
+        showGameWindow(user);
+    }
+
+    delete user.playerState;                                                            // Clean up allocated PlayerState memory
+    return 0;                                                                           // Exit program successfully
 }

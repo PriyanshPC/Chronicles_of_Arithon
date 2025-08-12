@@ -1,8 +1,8 @@
 #pragma once // Ensures the header is included only once during compilation
-
 #define FILEMANAGER_H // Macro guard for additional include protection
 
 #include <string> // Provides the std::string class
+#include <filesystem>
 
 struct UserData; // Forward declaration of UserData structure
 
@@ -17,3 +17,5 @@ bool userExists(const std::string& username);
 
 // Deletes the user data for the given username
 bool deleteUser(const std::string& username);
+
+std::filesystem::path getExecutableDirectory();
