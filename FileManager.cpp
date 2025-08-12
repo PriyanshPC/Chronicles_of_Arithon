@@ -1,132 +1,113 @@
-#include <iostream>
-#include <fstream>
-#include "FileManager.h"
-#include <vector>
-#include <string>
-using namespace std;
+#include "FileManager.h"                  // Include header for file manager declarations
+#include "Authenticator.h"                // Include header for authentication utilities
+#include "PlayerState.h"                  // Include header for player state management
+#include <fstream>                        // Include file stream for file I/O
+#include <iostream>                       // Include input/output stream for console I/O
+#include <string>                         // Include string class
+#include <sstream>                        // Include string stream for parsing
+#include <algorithm>                      // Include algorithms (e.g., for trimming)
 
-// ------------------------------------ Start of the section added for Authenticator Module -------------------------
-// The Authorization module will work perfectly if the interface is followed.
-// The data member: `credentialList` is used to simulate the credential table in memory.
-// The methods `readCredentialTable` and `addCredential` are used to read and write user credentials respectively.
-// The function prototypes are defined in the header file `FileIO.h`.
-// Please ensure that the interface remains unchanged for compatibility with the Authorization class.
+using namespace std;                      // Use the standard namespace
 
-void FileSystem::fakeFileIO() {
-	// This is just a mock implementation to simulate the credential table.
-	// It is only written for testing purposes. This will be deleted when the actual implementation is done.
-	credentialList.push_back({ "alice", "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f" });      //password123
-	credentialList.push_back({ "bob", "c6ba91b90d922e159893f46c387e5dc1b3dc5c101a5a4522f03b987177a24a91" });        //password456
-	credentialList.push_back({ "joy", "065433f78cb6e524d1291a9abe4604abe2b5e75ad7ac45c92d1f072694420b6c" });        //Maple234
-	credentialList.push_back({ "Robin123", "b492a99c33869cda86f9c40bddb36e527959c202528689a6584774ba2b88f7cd" });   //flower235
-	credentialList.push_back({ "skinchild", "20924ecc7b592f022c3c8febf7787f22da65c533b5cc209e5aa89c9e2e379a6b" });  //bobcatOzi
-	credentialList.push_back({ "furbaby", "b16c276f602722f88c2f95a6858f976db90dc3e717e9272a74d925c3009629ab" });    //password254
-	cout << "[FileSystem] Loaded mock credential list." << endl;
+// Returns the filename for a given username by appending ".dat"
+string getFileName(const string& username) {
+    return username + ".dat";             // Concatenate username with ".dat" extension
 }
 
-// This function will collect all username and password pairs
-// This return type is a LIST of User datatype
-// User datatype is defined as a structure of two strings (username and encryptedPassword)
-// This function returns the member data credentialList
-// 
-// When The FileSystem Class loads, the constructor should collect all the username and password
-// and populate the 'credentialList' variable.
-
-vector<User> FileSystem::readCredentialTable() {
-	return credentialList;
+// Checks if a user file exists for the given username
+bool userExists(const string& username) {
+    ifstream file(getFileName(username)); // Try to open the file for reading
+    return file.good();                   // Return true if file exists and is accessible
 }
 
+// Saves user data to a file
+bool saveUser(const UserData& user) {
+    string filename = getFileName(user.username); // Get the filename for the user
 
-// This function will be called by Authenticator module
-// This will add the new user information to the 'credentialList' variable
-// How that information will be stored for future use will be determined by the FILE IO module
+    ofstream file(filename);                      // Open file for writing
+    if (!file.is_open()) {                       // Check if file opened successfully
+        cout << "Failed to open file: " << filename << endl; // Print error message
+        return false;                            // Return false if file couldn't be opened
+    }
 
-bool FileSystem::addCredential(const std::string& username, const std::string& hashedPassword) {
-    
-	//Adding new user to 'credentialList'
-	credentialList.push_back({ username, hashedPassword });
+    file << "Username : " << user.username << "\n";          // Write username to file
+    file << "Password : " << user.password << "\n";          // Write password to file
+    file << user.playerState->serialize();                   // Write serialized player state
 
-	//Add code here to store updated credentialList to file
-	return true;
-}
-// ------------------------------------ End of the section added for Authenticator Module -------------------------
-
-
-//This is the constructor of the FileSystem class
-FileSystem::FileSystem() : fileName(FILENAME) {
-	fakeFileIO(); // Load mock data for testing purposes only
+    file.close();                                            // Close the file
+    return true;                                             // Return true on success
 }
 
-void FileSystem::loadFile() {
-	if (!checkForFile()) { // If file does not exist
-		ofstream file(fileName); // Create File
-		file.close(); // Close file
-		cout << "File " << fileName << " Created" << endl; // Print status
-	}
-	else { // If file does exist
-		cout << "File " << fileName << " Found" << endl; // Print status
-	}
+// Helper function to trim leading and trailing spaces from a string
+static inline string trim(const string& s) {
+    size_t start = s.find_first_not_of(" \t");               // Find first non-space/tab character
+    size_t end = s.find_last_not_of(" \t");                  // Find last non-space/tab character
+    return (start == string::npos) ? "" : s.substr(start, end - start + 1); // Return trimmed string
 }
 
-bool FileSystem::checkForFile() { // Check if file exists
-	ofstream file(fileName, ios::in); // opens for reading
-	file.close(); // Close file
-	return file.good(); // returns true if file exists, false if not
+// Loads user data from a file into a UserData object
+bool loadUser(const string& username, UserData& user) {
+    ifstream file(getFileName(username));                    // Open the user file for reading
+    if (!file.is_open()) return false;                       // Return false if file can't be opened
+
+    user.playerState->resetToDefault();                      // Reset player state to default values
+
+    string line;                                             // String to hold each line from file
+    while (getline(file, line)) {                            // Read file line by line
+        if (line.find("Username :") == 0) {                  // If line contains username
+            user.username = trim(line.substr(line.find(":") + 1)); // Extract and trim username
+        }
+        else if (line.find("Password :") == 0) {           // If line contains password
+            user.password = trim(line.substr(line.find(":") + 1)); // Extract and trim password
+        }
+        else if (line.find("chapterNumber :") == 0) {      // If line contains chapter number
+            user.playerState->setChapterNumber(stoi(trim(line.substr(line.find(":") + 1)))); // Set chapter number
+        }
+        else if (line.find("chapterEvent :") == 0) {       // If line contains chapter event
+            user.playerState->setChapterEvent(stoi(trim(line.substr(line.find(":") + 1))));   // Set chapter event
+        }
+        else if (line.find("health :") == 0) {             // If line contains health
+            user.playerState->setHealth(stoi(trim(line.substr(line.find(":") + 1))));         // Set health
+        }
+        else if (line.find("weapon :") == 0) {             // If line contains weapon
+            user.playerState->setWeapon(stoi(trim(line.substr(line.find(":") + 1))));         // Set weapon
+        }
+        else if (line.find("currentEventsDecisions[6] :") == 0) { // If line contains current decisions array
+            string values = trim(line.substr(line.find(":") + 1));   // Extract values string
+            stringstream ss(values);                                 // Create stringstream for parsing
+            int val, idx = 0;                                        // Value and index for array
+            char comma;                                              // To consume commas
+            while (ss >> val && idx < 6) {                           // Parse up to 6 values
+                user.playerState->setCurrentDecision(idx++, val);    // Set each decision value
+                ss >> comma;                                         // Consume comma separator
+            }
+        }
+        else if (line.find("previousChaptersOutcome[5] :") == 0) { // If line contains previous outcomes array
+            string values = trim(line.substr(line.find(":") + 1));   // Extract values string
+            stringstream ss(values);                                 // Create stringstream for parsing
+            int val, idx = 0;                                        // Value and index for array
+            char comma;                                              // To consume commas
+            while (ss >> val && idx < 5) {                           // Parse up to 5 values
+                user.playerState->setPreviousOutcome(idx++, val);    // Set each outcome value
+                ss >> comma;                                         // Consume comma separator
+            }
+        }
+        else if (line.find("currentDecisionIndex :") == 0) {       // If line contains current decision index
+            user.playerState->setCurrentDecisionIndex(stoi(trim(line.substr(line.find(":") + 1)))); // Set index
+        }
+        else if (line.find("outcomeIndex :") == 0) {               // If line contains outcome index
+            user.playerState->setOutcomeIndex(stoi(trim(line.substr(line.find(":") + 1))));         // Set index
+        }
+        else if (line.find("gameEnded :") == 0) {                    // If line contains game ended flag
+            user.playerState->setGameEnded(stoi(trim(line.substr(line.find(":") + 1))) != 0);       // Set flag
+        }
+    }
+
+    file.close();                                                    // Close the file
+    return true;                                                     // Return true on success
 }
 
-void FileSystem::printToFile(string printThis, fileLine fLine) {
-	if (!checkForFile()) {
-		perror("ERROR: File could not be found...\n");
-	}
-	else {
-		ofstream file(fileName, ios::app); // open file with append (do not overwrite);
-		file << printThis;
-		file.close(); // Close file
-		cout << "File Updated" << endl;
-	}
+// Deletes the user file for the given username
+bool deleteUser(const string& username) {
+    return (remove(getFileName(username).c_str()) == 0);             // Remove file, return true if successful
 }
-
-void FileSystem::saveFile(playerStats player) {
-	if (!checkForFile()) {
-		perror("File could not be found... Creating new File\n");
-	}
-	else {
-		ofstream file(fileName); // open file with append (do not overwrite);
-		file << getUsername(player) << endl;
-		file << getPassword(player) << endl;
-		file << getStoryLocation(player) << endl;
-		file << getItem(player) << endl;
-		file.close(); // Close file
-		cout << "File Updated" << endl;
-	}
-
-
-}
-
-void FileSystem::readFromFile() {
-	if (!checkForFile()) {
-		perror("ERROR: File could not be found...\n");
-	}
-	else {
-		ofstream file(fileName, ios::in); // open file with read (do not overwrite);
-		file.close(); // Close file
-	}
-}
-
-
-string getUsername(playerStats player) {
-	return player.getName();
-}
-
-string getPassword(playerStats player) {
-	return player.getPass();
-}
-
-string getStoryLocation(playerStats player) {
-	return player.getLocation();
-}
-
-string getItem(playerStats player) {
-	return player.getItem();
-}
-

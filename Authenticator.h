@@ -1,94 +1,42 @@
-#pragma once
+#pragma once // Ensures the header is included only once during compilation
 
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <cstring>
-#include <ctime>
-#include <iomanip>
-#include <sstream>
-#include <unordered_map>
-#include "FileManager.h"
+#define AUTHENTICATOR_H // Macro guard for additional include protection
 
-#define MAX_USERNAME_LENGTH 20
-#define MIN_USERNAME_LENGTH 3
-#define MIN_PASSWORD_LENGTH 6
+#include <string> // Provides the std::string class
 
-using namespace std;	
+class PlayerState; // Forward declaration of PlayerState class
 
-class Authenticator
-{
-	string loggedInUserName;
-	string inputUserName;
-	string inputPassword;
-	bool isNewUser;
-	bool debugMode;
-
-	vector<string> inputArgs;		// to store commandline input arguments
-	unordered_map<string, string> userCredentials; // this is a hash table, used to store username & password. for faster lookup
-
-	// Function to compute SHA256 hash of a string
-	string sha256(const string& input);
-
-	// Function to check if username and password are of proper format
-	bool isValidUsername(const string& username);
-	bool isValidPassword(const string& password);
-
-	// Function to check if a particular user exists in the current registration list. Registration cannot be a single entry
-	bool userExists(const string& username);
-	
-	// Function to display Input Argument summary
-	void displayInputArguments();
-
-	// Function to identify username, password from the command line arguments 
-	// This also identifies if the -newuser flag is set and if -debugmode is requested
-	void processInputArguments(int argCount, char** argVector);
-	bool validateCredentials(const string& username, const string& password); // to match with existing username and password
-	bool createNewUser(); // creating a new user
-
-	bool logIn(FileSystem& fileIO); // overall function to login a user
-	
-	//FILE IO ----------------------------------------------------------------------------------------
-	void loadUserCredentials(FileSystem& fileIO); // need data from File System to collect the list
-	void storeNewUser(FileSystem& fileIO); // storing the new user through file system 
-	//FILE IO ----------------------------------------------------------------------------------------
-
-public:
-	Authenticator(FileSystem& fileIO, int& argCount, char** argVector); // this is a special function which called parameterized constructor
-	~Authenticator(); // destructor
-	
-	void toggleDebugMode(); // to turn the debug mode to on or off
-	bool isDebugMode() const; // true when the debug mode is on
-	bool isLoggedIn() const; // login is successful or not
-	string encryptData(const string& inputString); // returns string in an encryption format
-	string getLoggedInUser() const; // returns username string to show who is logged in
-	vector<string> getInputArguments() const; // returns the inputArgs (getter, private data) which is supplied by the user
+// Structure to hold user-related data
+struct UserData {
+    std::string username;      // Stores the user's username
+    std::string password;      // Stores the user's password
+    PlayerState* playerState;  // Pointer to the player's state object
+    bool isNewUser;            // Indicates if the user is new
 };
 
-//Written by Rami
-class user {
-private:
-	string username;
-	string encryptedPassword;
+// Displays help information to the user
+void showHelp();
 
-public:
-	user() : username(""), encryptedPassword("") {}
-	user(string name, string pass) : username(name), encryptedPassword(pass) {}
+// Processes command-line arguments and populates the UserData structure
+bool processArguments(int argc, char* argv[], UserData& user);
 
-	string getUsername() {
-		return username;
-	}
+// Creates a new user account using the provided UserData
+bool createUser(UserData& user);
 
-	string getPassword() {
-		return encryptedPassword;
-	}
+// Authenticates an existing user using the provided UserData
+bool loginUser(UserData& user);
 
-	void setUsername(string username) {
-		this->username = username;
-	}
+// Encrypts the given text and returns the encrypted string
+std::string encrypt(const std::string& text);
 
-	void setPassword(string password) {
-		this->encryptedPassword = password;
-	}
-};
+// Validates the username and password (and optionally confirmation password)
+bool isValidInput(const std::string& username, const std::string& password, const std::string& confirmPass = "");
 
+// Displays the main game window for the authenticated user
+void showGameWindow(const UserData& user);
+
+// Handles the user's menu choice and updates UserData as needed
+bool handleMenuChoice(int choice, UserData& user);
+
+// Prompts the user for confirmation before deleting data
+bool deleteConfirmation();

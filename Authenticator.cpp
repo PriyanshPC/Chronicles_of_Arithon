@@ -1,304 +1,321 @@
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <cstring>
-#include <ctime>
-#include <iomanip>
-#include <sstream>
-#include <unordered_map>
-#include <openssl/sha.h>
+#include <iostream> // For input/output stream operations
+#include <string>   // For using std::string
+#include <cstdlib>  // For system() and exit()
+#include "Authenticator.h" // Header for authentication-related declarations
+#include "FileManager.h"   // Header for file management functions
+#include "PlayerState.h"   // Header for player state management
+#include "StoryEngine.h"   // Header for story engine functions
 
-#include "Authenticator.h"
-#include "FileManager.h"
+using namespace std; // Use the standard namespace
 
-using namespace std;
+// Displays the help menu to the user
+void showHelp() {
+    cout << "\n=== CHRONICLES OF ARITHON - HELP MENU ===\n\n";
+    cout << "This is a text-based interactive story game. Choices you make affect the story's outcome.\n";
+    cout << "Before playing, you must either create a new user profile or log in to an existing one.\n\n";
 
-Authenticator::Authenticator(FileSystem& fileIO, int& argCount, char** argVector) {
+    cout << "=== CREATE A NEW USER ===\n";
+    cout << "Use this format to create a new profile:\n";
+    cout << "  .\\TeamsProject.exe \"nuser-<username>-pswd-<password>-cpswd-<confirmPassword>\"\n";
+    cout << "Example:\n";
+    cout << "  .\\TeamsProject.exe \"nuser-arin-pswd-eldora123-cpswd-eldora123\"\n\n";
 
-	//Ask FileIO to provide all the registered user and load that data
-	loadUserCredentials(fileIO); //its a private method
+    cout << "=== LOGIN AN EXISTING USER ===\n";
+    cout << "Use this format to login with an existing profile:\n";
+    cout << "  .\\TeamsProject.exe \"euser-<username>-pswd-<password>\"\n";
+    cout << "Example:\n";
+    cout << "  .\\TeamsProject.exe \"euser-arin-pswd-eldora123\"\n\n";
 
-	if (debugMode == true) {
-		cout << "[Authenticator] Credential map initialized.\n";
-	}
-	
-	// Process command line arguments
-	processInputArguments(argCount, argVector);
+    cout << "=== GET HELP ===\n";
+    cout << "To show this help menu at any time:\n";
+    cout << "  .\\TeamsProject.exe -info\n";
 
-	// if DebugMode is true then print out the input arguments
-	if (debugMode == true) {
-		displayInputArguments();
-	}
+    cout << "\nOnce logged in, you can:\n";
+    cout << "  -> Continue your saved story\n";
+    cout << "  -> Start a new adventure\n";
+    cout << "  -> Delete your profile\n";
+    cout << "  -> Exit the game\n";
 
-	//login if the user is not already logged in
-	if (isLoggedIn() == false) {
-		logIn(fileIO);
-	}
-	else {
-		cout << "Already logged in as: " << loggedInUserName << endl;
-	}
+    cout << "\nMake decisions wisely — your story depends on them.\n";
+    cout << "=============================================\n";
 }
 
-Authenticator::~Authenticator() {
-	// Destructor can be used for cleanup if needed
+// Processes command-line arguments and populates the user data structure
+bool processArguments(int argc, char* argv[], UserData& user) {
+    user.playerState = new PlayerState();  // Allocate memory for player state
+
+    if (argc <= 1) { // No command-line arguments provided
+        return false; // Handled in main() fallback
+    }
+
+    string input = argv[1]; // Get the first argument
+
+    if (input == "-info") { // Show help menu if requested
+        showHelp();
+        return false;
+    }
+
+    // Handle new user creation
+    if (input.find("nuser-") == 0) {
+        user.isNewUser = true; // Mark as new user
+        int userStart = 6; // Start index after "nuser-"
+        int pswdPos = input.find("-pswd-"); // Find password delimiter
+        int cpswdPos = input.find("-cpswd-"); // Find confirm password delimiter
+
+        // Check for correct format
+        if (pswdPos == string::npos || cpswdPos == string::npos) {
+            cout << "Error: Wrong format! Use -init for help.\n";
+            return false;
+        }
+
+        // Extract username, password, and confirm password from input
+        user.username = input.substr(userStart, pswdPos - userStart);
+        string password = input.substr(pswdPos + 6, cpswdPos - pswdPos - 6);
+        string confirmPass = input.substr(cpswdPos + 7);
+
+        // Validate input fields
+        if (!isValidInput(user.username, password, confirmPass)) return false;
+
+        user.password = password; // Set password
+        return true;
+    }
+
+    // Handle existing user login
+    if (input.find("euser-") == 0) {
+        user.isNewUser = false; // Mark as existing user
+
+        int userStart = 6; // Start index after "euser-"
+        int pswdPos = input.find("-pswd-"); // Find password delimiter
+        if (pswdPos == string::npos) {
+            cout << "Error: Wrong format! Use -init for help.\n";
+            return false;
+        }
+
+        // Extract username and password from input
+        user.username = input.substr(userStart, pswdPos - userStart);
+        user.password = input.substr(pswdPos + 6);
+
+        // Validate input fields
+        if (!isValidInput(user.username, user.password)) return false;
+        return true;
+    }
+
+    // Unknown command
+    cout << "Error: Unknown command! Use -init for help.\n";
+    return false;
 }
 
-string Authenticator::sha256(const string& input) {
-	// Create a SHA256 hash of the input string
-	unsigned char hash[SHA256_DIGEST_LENGTH];
-	SHA256(reinterpret_cast<const unsigned char*>(input.c_str()), input.size(), hash);
-	// Convert the hash to a hexadecimal string
-	stringstream ss;
-	for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i)
-		ss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
-	return ss.str();
+// Validates username, password, and (optionally) confirm password
+bool isValidInput(const string& username, const string& password, const string& confirmPass) {
+    if (username.empty()) { // Username must not be empty
+        cout << "Error: Username cannot be empty!\n";
+        return false;
+    }
+    if (password.length() < 4) { // Password must be at least 4 characters
+        cout << "Error: Password must be at least 4 characters!\n";
+        return false;
+    }
+    if (!confirmPass.empty() && password != confirmPass) { // Passwords must match if confirmPass is provided
+        cout << "Error: Passwords don't match!\n";
+        return false;
+    }
+    return true; // All checks passed
 }
 
-string Authenticator::encryptData(const string& inputString)
-{
-	//Calling the sha256 function to encrypt the input string
-	return sha256(inputString);
+// Encrypts the given text using a simple transformation
+string encrypt(const string& text) {
+    unsigned int hash = 0x811C9DC5; // FNV offset basis (not used for actual encryption here)
+    for (char c : text) {
+        hash ^= static_cast<unsigned char>(c); // XOR character with hash
+        hash *= 0x01000193; // FNV prime multiplication
+    }
+    string encrypted = text; // Copy original text
+    for (char& c : encrypted) c += 3; // Shift each character by 3 (Caesar cipher)
+    return encrypted; // Return encrypted string
 }
 
-string Authenticator::getLoggedInUser() const {
-	return isLoggedIn() ? loggedInUserName : "";
+// Creates a new user profile and saves it
+bool createUser(UserData& user) {
+    if (userExists(user.username)) { // Check if user already exists
+        cout << "Error: User '" << user.username << "' already exists!\n";
+        return false;
+    }
+
+    user.password = encrypt(user.password); // Encrypt the password
+    user.playerState->resetToDefault(); // Reset player state to default
+
+    if (saveUser(user)) { // Save user data to file
+        return true;
+    }
+    else {
+        cout << " Failed to save user to file!\n";
+        return false;
+    }
 }
 
-void Authenticator::processInputArguments(int argCount, char** argVector) {
+// Logs in an existing user by verifying credentials
+bool loginUser(UserData& user) {
+    if (!userExists(user.username)) { // Check if user exists
+        cout << "Error: User '" << user.username << "' not found!\n";
+        return false;
+    }
 
-	if (argCount < 5) {
-		cout << "Error: Not enough arguments provided." << endl;
-		cout << "Usage: " << argVector[0] << "-u username -p password <-newuser> <-help>" << endl;
-		exit(1);
-	}
+    UserData storedUser; // Structure to hold loaded user data
+    storedUser.playerState = new PlayerState(); // Allocate memory for player state
 
-	inputArgs.clear(); // to clear any previously stored values inside the vector inputArgs
+    if (!loadUser(user.username, storedUser)) { // Load user data from file
+        cout << "Error: Failed to load user data!\n";
+        return false;
+    }
 
-	for (int i = 0; i < argCount; ++i) {
-		inputArgs.push_back(string(argVector[i]));
-	}
+    if (storedUser.password != encrypt(user.password)) { // Compare encrypted passwords
+        cout << "Error: Wrong password!\n";
+        return false;
+    }
 
-	for (int i = 1; i < argCount; i++) {
-		if (argVector[i] == string("-u") && i + 1 < argCount) {
-			inputUserName = argVector[++i];
-		}
-		else if (argVector[i] == string("-p") && i + 1 < argCount) {
-			inputPassword = argVector[++i];
-		}
-		else if (argVector[i] == string("-newuser")) {
-			isNewUser = true;
-		}
-		else if (argVector[i] == string("-debug")) {
-			debugMode = true;
-		}
-		else if (argVector[i] == string("-help")) {
-			cout << "Usage: " << argVector[0] << " -u <username> -p <password> [-newuser] [-debug]" << endl;
-			cout << "-u <username> : Specify the username" << endl;
-			cout << "-p <password> : Specify the password" << endl;
-			cout << "-newuser          : Create a new user" << endl;
-			cout << "-debug        : Enable debug mode" << endl;
-			cout << "-help         : Display this help message" << endl;
-			exit(0);
-		}
-		else {
-			cout << "Error: Unknown argument " << argVector[i] << endl;
-			exit(1);
-		}
-	}
+    *user.playerState = *storedUser.playerState; // Copy player state
+    user.password = storedUser.password; // Set encrypted password
+    return true;
 }
 
-void Authenticator::displayInputArguments() {
-	cout << "Username: " << inputUserName << endl;
-	cout << "Password: " << inputPassword << endl;
-	cout << "Encrypted Password: " << encryptData(inputPassword) << endl;
-	cout << "Is New User: " << (isNewUser ? "Yes" : "No") << endl;
-	cout << "Debug Mode: " << (debugMode ? "Enabled" : "Disabled") << endl;
+// Displays the main game window and menu
+void showGameWindow(const UserData& user) {
+    system("cls"); // Clear the console screen
+
+    cout << "========================================\n";
+    cout << "||  WELCOME TO CHRONICLES OF ARITHON  ||\n";
+    cout << "========================================\n\n";
+
+    if (user.isNewUser) { // Greet new user
+        cout << "Welcome, " << user.username << "!\nYour adventure begins here!\n";
+    }
+    else { // Greet returning user
+        cout << "Welcome back, " << user.username << "!\n";
+        cout << "\n";
+    }
+
+    cout << "\n===|| GAME MENU ||===\n";
+    if (!user.isNewUser) { // Menu for existing users
+        cout << "1. Continue Game\n2. Start New Game\n3. Delete Profile\n4. Exit Game\n\n";
+    }
+    else { // Menu for new users
+        cout << "1. Start New Game\n2. Delete Profile\n3. Exit Game\n\n";
+    }
+
+    bool menuActive = true; // Menu loop control
+    while (menuActive) {
+        string input; // User input string
+        int choice = 0; // Menu choice
+        cout << "Enter your choice: ";
+        getline(cin, input); // Get user input
+        try {
+            choice = stoi(input); // Convert input to integer
+            menuActive = !handleMenuChoice(choice, const_cast<UserData&>(user)); // Handle menu choice
+        }
+        catch (...) { // Handle invalid input
+            cout << "Invalid input! Please enter a number.\n";
+        }
+    }
 }
 
-void Authenticator::toggleDebugMode() {
-	debugMode = !debugMode;
+// Handles the user's menu selection and triggers the appropriate action
+bool handleMenuChoice(int choice, UserData& user) {
+    cout << endl;
+    if (!user.isNewUser) { // Menu for existing users
+        if (choice < 1 || choice > 4) { // Validate menu option
+            cout << "Invalid menu option! Please choose a valid number.\n";
+            return false;
+        }
+
+        switch (choice) {
+        case 1: // Continue game
+            cout << "CONTINUING GAME...\n";
+            initializeStoryEngine(user);
+            return true;
+
+        case 2: // Start new game
+            cout << "STARTING NEW GAME...\n";
+            user.playerState->resetToDefault();
+            initializeStoryEngine(user);
+            return true;
+
+        case 3: // Delete profile
+            cout << "DELETE PROFILE...";
+            if (deleteConfirmation()) { // Confirm deletion
+                if (deleteUser(user.username)) { // Delete user file
+                    cout << "Profile deleted. Exiting...\n";
+                    exit(0); // Exit program
+                }
+                else {
+                    cout << "Failed to delete profile.\n";
+                }
+            }
+            else {
+                cout << "Deletion canceled.\n";
+            }
+            return false;
+
+        case 4: // Exit game
+            if (exitRequest(user)) { // Confirm exit
+                exit(0); // Exit program
+            }
+            return false;
+
+        default: // Should not reach here
+            cout << "Invalid choice.\n";
+            return false;
+        }
+    }
+    else { // Menu for new users
+        if (choice < 1 || choice > 3) { // Validate menu option
+            cout << "Invalid menu option! Please choose a valid number.\n";
+            return false;
+        }
+
+        switch (choice) {
+        case 1: // Start new game
+            cout << "STARTING NEW GAME...\n";
+            user.playerState->resetToDefault();
+            initializeStoryEngine(user);
+            return true;
+
+        case 2: // Delete profile
+            cout << "DELETE PROFILE...";
+            if (deleteConfirmation()) { // Confirm deletion
+                if (deleteUser(user.username)) { // Delete user file
+                    cout << "Profile deleted. Exiting...\n";
+                    exit(0); // Exit program
+                }
+                else {
+                    cout << "Failed to delete profile.\n";
+                }
+            }
+            else {
+                cout << "Deletion canceled.\n";
+            }
+            return false;
+
+        case 3: // Exit game
+            if (exitRequest(user)) { // Confirm exit
+                exit(0); // Exit program
+            }
+            return false;
+
+        default: // Should not reach here
+            cout << "Invalid choice.\n";
+            return false;
+        }
+    }
+
+    return true; // Continue menu loop
 }
 
-bool Authenticator::isLoggedIn() const {
-	return !loggedInUserName.empty();
-}
+// Asks the user to confirm profile deletion
+bool deleteConfirmation() {
+    std::string input;
 
-bool Authenticator::isDebugMode() const {
-	return debugMode;
-}
+    cout << "\nAre you sure you want to delete your profile? (y/n): ";
+    getline(cin, input); // Get user input
 
-bool Authenticator::isValidUsername(const string& username) {
-	// Length between 3 and 20 characters, 
-	// Alphanumeric and underscores only, i.e. no special characters
-	// Checking length of username
-	bool isProperLengths = (username.length() >= MIN_USERNAME_LENGTH && username.length() <= MAX_USERNAME_LENGTH);
-	if (isProperLengths == false) {
-		cout << "Error: Username must be between " << MIN_USERNAME_LENGTH << " and " << MAX_USERNAME_LENGTH << " characters long." << endl;
-		return false;
-	}
-
-	// Check if username is alphanumeric and underscores only
-	bool isAlphanumeric = username.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_") == string::npos;
-	if (isAlphanumeric == false) {
-		cout << "Error: Username can only contain alphanumeric characters and underscores." << endl;
-		return false;
-	}
-	return true;
-}
-
-bool Authenticator::isValidPassword(const string& password)
-{
-	// Minimum length MIN_PASSWORD_LENGTH
-	// Both Uppercase and Lowercase letters needed
-	// At least one digit needed
-	// At least one special character needed
-	bool isProperLength = (password.length() >= MIN_PASSWORD_LENGTH);
-	if (!isProperLength) {
-		cout << "Error: Password must be at least " << MIN_PASSWORD_LENGTH << " characters long." << endl;
-		return false;
-	}
-
-	bool hasUppercase = password.find_first_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ") != string::npos;
-	if (!hasUppercase) {
-		cout << "Error: Password must contain at least one uppercase letter." << endl;
-		return false;
-	}
-
-	bool hasLowercase = password.find_first_of("abcdefghijklmnopqrstuvwxyz") != string::npos;
-	if (!hasLowercase) {
-		cout << "Error: Password must contain at least one lowercase letter." << endl;
-		return false;
-	}
-
-	bool hasDigit = password.find_first_of("0123456789") != string::npos;
-	if (!hasDigit) {
-		cout << "Error: Password must contain at least one digit." << endl;
-		return false;
-	}
-
-	bool hasSpecialChar = password.find_first_of("!@#$%^&*()-_=+[]{}|;:',.<>?") != string::npos;
-	if (!hasSpecialChar) {
-		cout << "Error: Password must contain at least one special character." << endl;
-		return false;
-	}
-
-	return true;
-}
-
-bool Authenticator::userExists(const string& username) {
-	// Check if the user already exists in the credentials map
-	return userCredentials.find(username) != userCredentials.end();
-}
-
-vector<string> Authenticator::getInputArguments() const {
-	return inputArgs;
-}
-
-void Authenticator::loadUserCredentials(FileSystem& fileIO)
-{
-	vector<User> users = fileIO.readCredentialTable();
-
-	for (const auto& user : users) {
-		userCredentials[user.username] = user.encryptedPassword;
-	}
-}
-
-bool Authenticator::validateCredentials(const string& username, const string& password)
-{
-	if (userExists(inputUserName) == false) {
-		cout << "Error: User does not exist. Register using the -newuser keyword." << endl;
-		return false;
-	}
-	string encryptedPassword = encryptData(password);
-	if (userCredentials[username] == encryptedPassword) {
-		return true; // Credentials are valid
-	}
-	else {
-		return false; // Credentials are invalid
-	}
-}
-
-bool Authenticator::logIn(FileSystem& fileIO)
-{
-	//if new user is requested, then create a new user
-	//	Check if the username exists 
-	//	Check if the username and password are valid
-	//	Create a new user if it doesn't exist
-	//	Otherwise error message that username exists
-	//If newuser is not requested, then check if the username exists
-	//	If username exists then validate username and password against stored encrypted password
-	//	If matched then update loggedinUsername
-	//	otherwise print that invalid username or password
-
-	if (inputUserName.empty() || inputPassword.empty()) {
-		cout << "Error: Username and password cannot be empty." << endl;
-		return false;
-	}
-
-	if (isNewUser == true) {
-		if (createNewUser() == true) {
-			// If the new user is created successfully, log them in
-			loggedInUserName = inputUserName;
-
-			// Store the new user credentials
-			storeNewUser(fileIO);
-
-			cout << "New user created and logged in successfully." << endl;
-			return true;
-		}
-		else {
-			cout << "Error: Failed to create new user." << endl;
-			loggedInUserName = "";
-			return false;
-		}
-	}
-	else {
-		// If the user exists, validate the credentials
-		if (validateCredentials(inputUserName, inputPassword) == true)
-		{
-			loggedInUserName = inputUserName;
-			cout << "Logged in successfully as " << loggedInUserName << "." << endl;
-			return true;
-		}
-		else {
-			cout << "Error: Invalid username or password." << endl;
-			loggedInUserName = "";
-			return false;
-		}
-	}
-}
-
-bool Authenticator::createNewUser()
-{
-	//if username exists then print error message and return false
-	if (userExists(inputUserName) == true) {
-		cout << "Error: User already exists. Choose a new username" << endl;
-		return false;
-	}
-
-	//if username is not valid then print error message and return false
-	if (isValidUsername(inputUserName) == false) {
-		cout << "Error: Invalid user name" << endl;
-		cout << "Length between 3 and 20 characters" << endl;
-		cout << "Alphanumeric and underscores only, i.e.no special characters." << endl;
-		return false;
-	}
-
-	//if password is not valid then print error message and return false
-	if (isValidPassword(inputPassword) == false) {
-		cout << "Error: Invalid password" << endl;
-		cout << "\tMinimum length " << MIN_PASSWORD_LENGTH << endl;
-		cout << "\tBoth Uppercase and Lowercase letters needed" << endl;
-		cout << "\tAt least one digit needed" << endl;
-		cout << "\tAt least one special character needed" << endl;
-		return false;
-	}
-	userCredentials[inputUserName] = encryptData(inputPassword);
-	cout << "User " << inputUserName << " created successfully." << endl;
-	return true;
-}
-
-void Authenticator::storeNewUser(FileSystem& fileIO)
-{
-	fileIO.addCredential(inputUserName, encryptData(inputPassword));
+    return !input.empty() && (toupper(input[0]) == 'Y'); // Return true if 'Y' or 'y'
 }
