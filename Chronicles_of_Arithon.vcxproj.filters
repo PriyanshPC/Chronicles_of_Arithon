@@ -33,6 +33,12 @@
     <ClCompile Include="PlayerState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="battle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PlayerState.h">
@@ -48,6 +54,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EventGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -131,6 +131,7 @@
     <ClCompile Include="Chronicles_of_Arithon.cpp" />
     <ClCompile Include="EventGenerator.cpp" />
     <ClCompile Include="FileManager.cpp" />
+    <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="PlayerState.cpp" />
     <ClCompile Include="StoryEngine.cpp" />
   </ItemGroup>
@@ -143,6 +144,7 @@
     <ClInclude Include="Authenticator.h" />
     <ClInclude Include="EventGenerator.h" />
     <ClInclude Include="FileManager.h" />
+    <ClInclude Include="GameEngine.h" />
     <ClInclude Include="PlayerState.h" />
     <ClInclude Include="StoryEngine.h" />
   </ItemGroup>
