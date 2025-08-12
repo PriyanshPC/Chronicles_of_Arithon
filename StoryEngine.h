@@ -31,10 +31,8 @@ void showUltimateOutcome(int outcomeId);
 int outcomeAlgorithm(PlayerState& ps);
 
 // Handles user request to exit the story
-bool exitRequest(UserData& user);
+bool exitRequest(UserData& user, char confirm);
 
-// Saves the user's progress in the story
-void saveProgress(UserData& user);
 
 // Retrieves story data as a string for a specific chapter, event, and data type
 std::string getStoryData(int chapterNumber, int eventNumber, const std::string& dataType);

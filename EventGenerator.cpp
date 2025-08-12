@@ -48,7 +48,7 @@ char displayEvent(int chapterNumber, int eventNumber, UserData& user) {
                 cin >> confirm; // Read confirmation
                 confirm = toupper(confirm); // Convert to uppercase
                 if (confirm == 'Y') { // If confirmed
-                    if (exitRequest(user)) exit(0); // Call exitRequest and exit if true
+                    if (exitRequest(user, confirm)) exit(0); // Call exitRequest and exit if true
                     return displayEvent(chapterNumber, eventNumber, user); // Otherwise, redisplay event
                 }
                 else if (confirm == 'N') { // If not confirmed
@@ -186,11 +186,11 @@ char combat(EnemyState enemy, int weaponDamage) {
 // Presents a puzzle to the player and checks their answer
 char puzzle() {
     clearStoryScreen(); // Clear the screen for the puzzle
-    cout << "========================================\\n"; // Print puzzle header
-    cout << "||        Ancient Pattern Lock        ||\\n";
-    cout << "========================================\\n\\n";
+    cout << "========================================\n"; // Print puzzle header
+    cout << "||        Ancient Pattern Lock        ||\n";
+    cout << "========================================\n\n";
 
-    cout << "To unlock the sacred seal, solve this numeric sequence:\\n"; // Present puzzle instructions
+    cout << "To unlock the sacred seal, solve this numeric sequence:\n"; // Present puzzle instructions
     cout << "2, 6, 12, 20, 30, ?\\n"; // Show the sequence
     cout << "Enter the next number in the pattern: "; // Prompt for answer
 
@@ -201,23 +201,23 @@ char puzzle() {
     while (attempts < 3) { // Allow up to 3 attempts
         if (!(cin >> input)) { // If input is not a number
             cin.clear(); // Clear error state
-            cin.ignore(numeric_limits<streamsize>::max(), '\\n'); // Ignore invalid input
-            cout << "Invalid input. Please enter a number.\\n"; // Prompt for valid input
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore invalid input
+            cout << "Invalid input. Please enter a number.\n"; // Prompt for valid input
             continue; // Retry
         }
 
         if (input == correctAnswer) { // If answer is correct
-            cout << "\\nThe lock clicks and ancient gears move. The path opens!\\n"; // Success message
+            cout << "\\nThe lock clicks and ancient gears move. The path opens!\n"; // Success message
             return 'A'; // Return success
         }
         else { // Incorrect answer
             attempts++; // Increment attempt count
             if (attempts == 1)
-                cout << "Incorrect. Hint: Differences between numbers are increasing.\\n"; // First hint
+                cout << "Incorrect. Hint: Differences between numbers are increasing.\n"; // First hint
             else if (attempts == 2)
-                cout << "Still wrong. Think of how the gap changes between numbers.\\n"; // Second hint
+                cout << "Still wrong. Think of how the gap changes between numbers.\n"; // Second hint
             else
-                cout << "The mechanism resets. You failed to unlock the seal.\\n"; // Failure message
+                cout << "The mechanism resets. You failed to unlock the seal.\n"; // Failure message
         }
     }
 

@@ -80,7 +80,7 @@ void storyManager(UserData& user) {
 
         if (toupper(restartChoice) == 'Y') { // If user wants to restart
             playerState->resetToDefault(); // Reset player state
-            saveProgress(user); // Save progress
+            saveUser(user); // Save progress
             clearStoryScreen(); // Clear screen
             displayChapter(1); // Show first chapter
             storyManager(user); // Restart story manager
@@ -124,13 +124,13 @@ void storyManager(UserData& user) {
                 int outcome = getGameData(chapter, event, puzzleOutcome, "outcome"); // Get outcome from data
 
                 playerState->addCurrentDecision(outcome); // Record decision
-                saveProgress(user); // Save progress
+                saveUser(user); // Save progress
                 break; // Exit loop
             }
             int outcome = getGameData(chapter, event, combatOutcome, "outcome"); // Get outcome from data
 
             playerState->addCurrentDecision(outcome); // Record decision
-            saveProgress(user); // Save progress
+            saveUser(user); // Save progress
             break; // Exit loop
         }
 
@@ -143,7 +143,7 @@ void storyManager(UserData& user) {
             playerState->addCurrentDecision(outcome); // Record decision
             playerState->setChapterEvent((choice == 'A') ? 10 : (weapon == 3 ? 10 : 11)); // Set next event
 
-            saveProgress(user); // Save progress
+            saveUser(user); // Save progress
             event = playerState->getChapterEvent(); // Update event
             continue; // Continue loop
         }
@@ -213,7 +213,7 @@ void storyManager(UserData& user) {
         int ultimateOutcome = playerState->getCurrentDecision(playerState->getCurrentDecisionIndex() - 1);  // final combat or puzzle outcome
 
         playerState->addPreviousOutcome(ultimateOutcome); // Record outcome
-        saveProgress(user); // Save progress
+        saveUser(user); // Save progress
 
         if (ultimateOutcome == 1) {
             cout << "You emerged victorious in battle.\n";
@@ -229,7 +229,7 @@ void storyManager(UserData& user) {
         }
 
         cout << "\nPress Enter to view the final outcome...";
-        cin.ignore();
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         cin.get();
 
         clearStoryScreen();
@@ -238,7 +238,7 @@ void storyManager(UserData& user) {
         cout << "\nPress Enter to exit the game...";
         cin.get();
         playerState->setGameEnded(true); // Mark game as ended
-        saveProgress(user); // Save progress
+        saveUser(user); // Save progress
         exit(0); // Exit game
     }
 
@@ -250,9 +250,9 @@ void storyManager(UserData& user) {
     playerState->resetCurrentDecisions(); // Reset decisions
 
     cout << "\nChapter " << chapter << " completed.\n";
-    saveProgress(user); // Save progress
+    saveUser(user); // Save progress
     cout << "Progress Saved! Press Enter to continue...";
-    cin.ignore();
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     cin.get();
 
     clearStoryScreen(); // Clear screen
@@ -264,7 +264,7 @@ void storyManager(UserData& user) {
 void displayChapter(int chapterNumber) {
     int displayChapterNumber = chapterNumber;
     if (chapterNumber == 7) {
-        displayChapterNumber = 6;  // Always show chapter 6 instead of 7
+        displayChapterNumber = 6;  // Always show chapter 6 instead of chapter 7
     }
 
     string story = getStoryData(chapterNumber, 0, "story"); // Get story text
@@ -278,6 +278,7 @@ void displayChapter(int chapterNumber) {
     cout << "\n===== Chapter " << displayChapterNumber << ": " << name << " =====\n";
     cout << story << "\n\n";
     cout << "Press Enter to continue...";
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     cin.get();
     clearStoryScreen(); // Clear screen after input
 }
@@ -329,14 +330,11 @@ void showUltimateOutcome(int outcomeId) {
 }
 
 // Handles user request to exit the game
-bool exitRequest(UserData& user) {
-    cout << "\nAre you sure you want to exit? (y/n): ";
-    char confirm;
-    cin >> confirm;
+bool exitRequest(UserData& user, char confirm) {
 
     if (confirm == 'y' || confirm == 'Y') {
-        saveProgress(user); // Save progress before exit
-        cout << "Progress saved. Exiting game...\nType exit again to exit the console.";
+        saveUser(user); // Save progress before exit
+        cout << "Progress saved. Exiting game...\n";
         return true; // Confirm exit
     }
 
@@ -374,9 +372,4 @@ int getGameData(int chapterNumber, int eventNumber, char choice, const string& d
         return 0; // On error, return 0
     }
     return 0; // Default return
-}
-
-// Saves the user's progress to file
-void saveProgress(UserData& user) {
-    saveUser(user); // Call save function
 }
