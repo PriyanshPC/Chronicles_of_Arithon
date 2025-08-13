@@ -91,7 +91,7 @@ Authenticator::Authenticator(int& argCount, char** argVector) {
 	inputPasswordConfirmation = "";
 	loggedInUserName = "";
 	isNewUser = false;
-	DebugMode = true;
+	DebugMode = false;
 
 	if (DebugMode) {
 		cout << "[Authenticator] Credential map initialized.\n";

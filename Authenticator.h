@@ -19,7 +19,6 @@ private:
 	string inputPasswordConfirmation;
 	bool isNewUser;
 	bool DebugMode;
-	//bool DebugMode = true;
 
 	int countArgs;
 	vector<string> inputArgs;

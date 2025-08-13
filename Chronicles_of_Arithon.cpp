@@ -12,7 +12,7 @@ int main(int argCount, char** argVector) {                                  // M
         ? handleCommandLineLogin(user, AuthInstance)                        // Attempt command-line login or user creation
         : handleInteractiveLogin(user, AuthInstance);                       // Otherwise, handle interactive login
 
-    if (success) {                                                          // If login or registraiton is successful
+    if (success) {                                                          // If login or registration is successful
         showGameWindow(user);                                               // Launch game window
     }
 
