@@ -252,7 +252,7 @@ bool handleInteractiveLogin(UserData& user, Authenticator& AuthInstance)
             getline(cin, user.password);                        // Read password
             user.isNewUser = false;                             // Mark as existing user
 
-            AuthInstance.setInputVariables(user.username, user.password, user.isNewUser, false);
+            AuthInstance.setInputVariables(user.username, user.password, user.password, user.isNewUser, false);
             success = AuthInstance.logIn(user); // Attempt to log in using Authenticator
 
             if (success) {                              // If login succeeded
@@ -271,16 +271,9 @@ bool handleInteractiveLogin(UserData& user, Authenticator& AuthInstance)
             string confirm;                                     // Store confirmation input
             getline(cin, confirm);                              // Read confirmation
 
-            // only set the authenticator variables if the user is creating a new user
-            // and if the confirm password matches the password
-            if (user.password == confirm) {
-                AuthInstance.setInputVariables(user.username, user.password, user.isNewUser, false);
-            }
-            else {
-                cout << "Passwords do not match!! Try again." << endl;
-                continue;
-            }
-
+            //Set the internal data for the auth object
+            AuthInstance.setInputVariables(user.username, user.password, confirm, user.isNewUser, false);
+            
             // Attempt to create a new user using Authenticator
             // Using Authenticator login function to create a new user
             success = AuthInstance.logIn(user); // Attempt to log in with new user credentials

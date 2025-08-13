@@ -63,7 +63,7 @@ public:
 	bool processInputArguments();
 	bool isDebugMode() const;
 	bool logIn(UserData& user);
-	void setInputVariables(const string& username, const string& password, bool newUser, bool debugMode);
+	void setInputVariables(const string& username, const string& password, const string& passwordConfirm, bool newUser, bool debugMode);
 
 	//Unused functions
 	void toggleDebugMode();
