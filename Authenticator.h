@@ -2,7 +2,6 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
-#include "GameEngine.h"
 
 #define MAX_USERNAME_LENGTH 20
 #define MIN_USERNAME_LENGTH 3
@@ -17,10 +16,12 @@ private:
 	string loggedInUserName;
 	string inputUserName;
 	string inputPassword;
+	string inputPasswordConfirmation;
 	bool isNewUser;
 	bool DebugMode;
 	//bool DebugMode = true;
 
+	int countArgs;
 	vector<string> inputArgs;
 	unordered_map<string, string> userCredentials;
 
@@ -49,18 +50,22 @@ private:
 	// Function to load all user information and credentials from files
 	void loadUserCredentialsFromFiles();
 
+	bool isFlag(const string& text);
+
 public:
+	vector<string> getArgVector()const;
+	int getArgCount()const;
 	Authenticator(int& argCount, char** argVector);
 	bool isNewUserFlag() const;
 	string encryptData(const string& inputString);
 	string getUsername() const;
 	string getPassword() const;
-	bool processInputArguments(int argCount, char** argVector);
+	bool processInputArguments();
 	bool isDebugMode() const;
 	bool logIn(UserData& user);
 	void setInputVariables(const string& username, const string& password, bool newUser, bool debugMode);
 
-	//Suspected unused functions
+	//Unused functions
 	void toggleDebugMode();
 	bool isLoggedIn() const;
 	string getLoggedInUser() const;

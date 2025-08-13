@@ -1,12 +1,11 @@
 #include "FileManager.h"                  // Include header for file manager declarations
-#include "GameEngine.h"                     // Include header for authentication utilities
+#include "MenuController.h"               // Include header for authentication utilities
 #include "PlayerState.h"                  // Include header for player state management
 #include <fstream>                        // Include file stream for file I/O
 #include <iostream>                       // Include input/output stream for console I/O
 #include <string>                         // Include string class
 #include <sstream>                        // Include string stream for parsing
 #include <windows.h>
-
 #include <filesystem>
 
 using namespace std;                      // Use the standard namespace
@@ -51,7 +50,6 @@ static inline string trim(const string& s) {
 bool loadUser(const string& username, UserData& user) {
 
     filesystem::path fullPath = getExecutableDirectory() / getFileName(username);
-    cout << "Loading user data for: " << fullPath << endl; // Debug message to indicate loading user data
     ifstream file(fullPath); // Open the user file for reading
     if (!file.is_open()) return false;                       // Return false if file can't be opened
 
