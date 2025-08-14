@@ -1,6 +1,3 @@
-#include "Authenticator.h"
-#include "FileManager.h"
-#include "GameEngine.h"
 #include <filesystem> 
 #include <fstream>
 #include <iomanip>
@@ -9,8 +6,18 @@
 #include <sstream>
 #include <unordered_map>
 #include <vector>
-
+#include "Authenticator.h"
+#include "FileManager.h"
+#include "MenuController.h"
 using namespace std;
+
+vector<string> Authenticator::getArgVector() const{
+	return inputArgs;
+}
+
+int Authenticator::getArgCount() const{
+	return countArgs;
+}
 
 string Authenticator::trim(const std::string& str)
 {
@@ -70,6 +77,22 @@ Authenticator::Authenticator(int& argCount, char** argVector) {
 	// Load user credentials from files
 	loadUserCredentialsFromFiles();
 
+	// Store the argCount into the member Variable
+	countArgs = argCount;
+
+	// To clear any previously stored values inside the vector inputArgs
+	inputArgs.clear();
+	// Load all input arguments into the vector
+	for (int i = 0; i < argCount; ++i) {
+		inputArgs.push_back(string(argVector[i]));
+	}
+	inputPassword = "";
+	inputUserName = "";
+	inputPasswordConfirmation = "";
+	loggedInUserName = "";
+	isNewUser = false;
+	DebugMode = false;
+
 	if (DebugMode) {
 		cout << "[Authenticator] Credential map initialized.\n";
 		// Display the loaded user credentials
@@ -100,48 +123,59 @@ string Authenticator::getLoggedInUser() const {
 	return isLoggedIn() ? loggedInUserName : "";
 }
 
-bool Authenticator::processInputArguments(int argCount, char** argVector) {
+bool Authenticator::isFlag(const string& text) {
+	bool notEmpty = !text.empty();
+	bool hasMark = (text[0] == '-');
+	return notEmpty && hasMark;
+}
 
-	// to clear any previously stored values inside the vector inputArgs
-	inputArgs.clear();
-
-	for (int i = 0; i < argCount; ++i) {
-		inputArgs.push_back(string(argVector[i]));
-	}
-	// Check for -help
-	for (int i = 1; i < argCount; ++i) {
-		if (string(argVector[i]) == "-help") {
-			cout << "Usage: " << argVector[0] << " -u <username> -p <password> [-newuser] [-debug]" << endl;
-			cout << "-u <username> : Specify the username" << endl;
-			cout << "-p <password> : Specify the password" << endl;
-			cout << "-newuser      : Create a new user" << endl;
-			cout << "-debug        : Enable debug mode" << endl;
-			cout << "-help         : Display this help message" << endl;
+bool Authenticator::processInputArguments() {
+	// Check if -info appears anywhere in the CLA list
+	for (int i = 1; i < countArgs; ++i) {
+		if (inputArgs[i] == "-info") {
+			showHelp(false, inputArgs[0]);
 			return false;
 		}
 	}
 
-	if (argCount < 5) {
+	string fullPath(inputArgs[0]);
+	size_t pos = fullPath.find_last_of("\\/");
+	string filename = ".\\" + ((pos != string::npos) ? fullPath.substr(pos + 1) : fullPath);
+
+	if (countArgs < 2) {
 		cout << "Error: Not enough arguments provided." << endl;
-		cout << "Usage: " << argVector[0] << " -u username -p password <-newuser> <-help>" << endl;
+		cout << "Run " << filename << " -info to learn proper usage." << endl;
+		cout << "Or use without command line arguments and use the main menu instead." << endl;
 		return false;
 	}
 
-	for (int i = 1; i < argCount; i++) {
-		if (argVector[i] == string("-u") && i + 1 < argCount) {
-			inputUserName = argVector[++i];
+	for (int i = 1; i < countArgs; ++i) {
+		string arg = inputArgs[i];
+
+		if ((arg == "-euser" || arg == "-nuser" || arg == "-pswd" || arg == "-cpswd") && (i + 1 >= countArgs || isFlag(inputArgs[i + 1]))) {
+			cout << "Error: Flag '" << arg << "' requires a value." << endl;
+			return false;
 		}
-		else if (argVector[i] == string("-p") && i + 1 < argCount) {
-			inputPassword = argVector[++i];
-		}
-		else if (argVector[i] == string("-newuser")) {
+
+		if (arg == "-nuser" && i + 1 < countArgs && !isFlag(inputArgs[i+1])) {
+			inputUserName = inputArgs[++i];
 			isNewUser = true;
 		}
-		else if (argVector[i] == string("-debug")) {
+		else if (arg == "-euser" && i + 1 < countArgs && !isFlag(inputArgs[i + 1])) {
+			inputUserName = inputArgs[++i];
+			isNewUser = false;
+		}
+		else if (arg == "-pswd" && i + 1 < countArgs && !isFlag(inputArgs[i + 1])) {
+			inputPassword = inputArgs[++i];
+		}
+		else if (arg == "-cpswd" && i + 1 < countArgs && !isFlag(inputArgs[i + 1])) {
+			inputPasswordConfirmation = inputArgs[++i];
+		}
+		else if (arg == "-debug") {
 			DebugMode = true;
 		}
 		else {
-			cout << "Error: Unknown argument " << argVector[i] << endl;
+			cout << "Error: Unknown argument '" << arg << "'" << endl;
 			return false;
 		}
 	}
@@ -149,12 +183,14 @@ bool Authenticator::processInputArguments(int argCount, char** argVector) {
 	if (DebugMode) {
 		displayInputArguments();
 	}
+
 	return true;
 }
 
 void Authenticator::displayInputArguments() {
 	cout << "Username: " << inputUserName << endl;
 	cout << "Password: " << inputPassword << endl;
+	cout << "Repeated Password: " << inputPasswordConfirmation << endl;
 	cout << "Encrypted Password: " << encryptData(inputPassword) << endl;
 	cout << "Is New User: " << (isNewUser ? "Yes" : "No") << endl;
 	cout << "Debug Mode: " << (DebugMode ? "Enabled" : "Disabled") << endl;
@@ -178,14 +214,19 @@ bool Authenticator::isValidUsername(const string& username) {
 	// Checking length of username
 	bool isProperLengths = (username.length() >= MIN_USERNAME_LENGTH && username.length() <= MAX_USERNAME_LENGTH);
 	if (isProperLengths == false) {
-		cout << "Error: Username must be between " << MIN_USERNAME_LENGTH << " and " << MAX_USERNAME_LENGTH << " characters long." << endl;
+		if(DebugMode) {
+			cout << "Debug: Username length is invalid." << endl;
+			cout << "Error: Username must be between " << MIN_USERNAME_LENGTH << " and " << MAX_USERNAME_LENGTH << " characters long." << endl;
+		}
 		return false;
 	}
 
 	// Check if username is alphanumeric and underscores only
 	bool isAlphanumeric = username.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_") == string::npos;
 	if (isAlphanumeric == false) {
-		cout << "Error: Username can only contain alphanumeric characters and underscores." << endl;
+		if (DebugMode) {
+			cout << "Error: Username can only contain alphanumeric characters and underscores." << endl;
+		}
 		return false;
 	}
 	return true;
@@ -241,8 +282,13 @@ vector<string> Authenticator::getInputArguments() const {
 
 bool Authenticator::validateCredentials(const string& username, const string& password)
 {
+	if (inputUserName.empty() || inputPassword.empty()) {
+		cout << "Error: Username and password cannot be empty." << endl;
+		return false;
+	}
+
 	if (userExists(inputUserName) == false) {
-		cout << "Error: User does not exist. Register using the -newuser keyword." << endl;
+		cout << "Error: User does not exist." << endl;
 		return false;
 	}
 	string encryptedPassword = encryptData(password);
@@ -250,6 +296,7 @@ bool Authenticator::validateCredentials(const string& username, const string& pa
 		return true; // Credentials are valid
 	}
 	else {
+		cout << "Error: User exists but password does not match." << endl;
 		return false; // Credentials are invalid
 	}
 }
@@ -265,12 +312,6 @@ bool Authenticator::logIn(UserData& user)
 	//	If username exists then validate username and password against stored encrypted password
 	//	If matched then update loggedinUsername
 	//	otherwise print that invalid username or password
-
-	if (inputUserName.empty() || inputPassword.empty()) {
-		cout << "Error: Username and password cannot be empty." << endl;
-		return false;
-	}
-
 	if (isNewUser == true) {
 		if (createNewUser() == true) {
 			// If the new user is created successfully, log them in
@@ -283,17 +324,24 @@ bool Authenticator::logIn(UserData& user)
 
 			// Store the new user credentials
 			if (saveUser(user)) {
-				cout << "New user created and logged in successfully." << endl;
+				if (DebugMode) {
+					cout << "New user created and logged in successfully." << endl;
+				}
 				return true;
 			}
 			else {
-				cout << "Error: Failed to save new user to file." << endl;
+				if (DebugMode){
+					cout << "Error: Failed to save new user to file." << endl;
+				}
 				loggedInUserName = "";
 				return false;
 			}
 		}
 		else {
-			cout << "Error: Failed to create new user." << endl;
+			if(DebugMode){
+				// If the new user creation failed, print an error message
+				cout << "Error: User creation failed." << endl;
+			}
 			loggedInUserName = "";
 			return false;
 		}
@@ -311,16 +359,22 @@ bool Authenticator::logIn(UserData& user)
 			UserData storedUser;								// Structure to hold loaded user data
 			storedUser.playerState = new PlayerState();			// Allocate memory for player state
 			if (loadUser(user.username, storedUser) == false) { // Load user data from file
-				cout << "Error: Failed to load user data!\n";
+				if (DebugMode) {
+					cout << "Failed to load game data for: " << user.username << endl;
+				}
 				return false;
 			}
 			*user.playerState = *storedUser.playerState; // Copy player state
 
-			cout << "Logged in successfully as " << loggedInUserName << "." << endl;
+			if(DebugMode) {
+				cout << "Logged in successfully as " << loggedInUserName << "." << endl;
+			}
 			return true;
 		}
 		else {
-			cout << "Error: Invalid username or password." << endl;
+			if (DebugMode)	 {
+				cout << "Error: Invalid username or password." << endl;
+			}
 			loggedInUserName = "";
 			return false;
 		}
@@ -329,29 +383,45 @@ bool Authenticator::logIn(UserData& user)
 
 bool Authenticator::createNewUser()
 {
+	if (inputUserName.empty() || inputPassword.empty()) {
+		cout << "Error: Username and password cannot be empty." << endl;
+		return false;
+	}
+
 	//if username exists then print error message and return false
 	if (userExists(inputUserName) == true) {
-		cout << "Error: User already exists. Choose a new username" << endl;
+		cout << "Error: User already exists. Choose a different username" << endl;
+		return false;
+	}
+
+	if (inputPassword != inputPasswordConfirmation) {
+		cout << "Error: Passwords don't match. Try again." << endl;
 		return false;
 	}
 
 	//if username is not valid then print error message and return false
 	if (isValidUsername(inputUserName) == false) {
+		cout << endl;
 		cout << "Error: Invalid user name" << endl;
-		cout << "Length between 3 and 20 characters" << endl;
-		cout << "Alphanumeric and underscores only, i.e.no special characters." << endl;
+		cout << "\tLength between 3 and 20 characters" << endl;
+		cout << "\tAlphanumeric and underscores only, i.e.no special characters." << endl;
+		cout << endl;
 		return false;
 	}
 
 	//if password is not valid then print error message and return false
 	if (isValidPassword(inputPassword) == false) {
+		cout << endl;
 		cout << "Error: Invalid password" << endl;
 		cout << "\tMinimum length " << MIN_PASSWORD_LENGTH << endl;
 		cout << "\tBoth Uppercase and Lowercase letters needed" << endl;
 		cout << "\tAt least one digit needed" << endl;
 		cout << "\tAt least one special character needed" << endl;
+		cout << endl;
 		return false;
 	}
+
+
 	userCredentials[inputUserName] = encryptData(inputPassword);
 	cout << "User " << inputUserName << " created successfully." << endl;
 	return true;
@@ -369,9 +439,11 @@ string Authenticator::getPassword() const {
 	return inputPassword;
 }
 
-void Authenticator::setInputVariables(const string& username, const string& password, bool newUser, bool debugMode) {
+void Authenticator::setInputVariables(const string& username, const string& password, const string& passwordConfirm, bool newUser, bool debugMode)
+{
 	inputUserName = username;
 	inputPassword = password;
+	inputPasswordConfirmation = passwordConfirm;
 	isNewUser = newUser;
 	DebugMode = debugMode;
 }
