@@ -183,7 +183,7 @@ void showHelp(bool fromMenu, string exeName)
         cout << "Before playing, create a new user or log-in as an existing one." << endl;
         cout << "Use the main menu or the command line arguments to login/register" << endl;
         cout << endl;
-        cout << "===== Using the Command Line ===== " << endl;
+        cout << "========================================================================================================" << endl;
         cout << "" << endl;
         cout << "To create a new profile:" << endl;
         cout << filename << " -nuser <username> -pswd  <password> -cpswd <same password>" << endl;
@@ -195,6 +195,12 @@ void showHelp(bool fromMenu, string exeName)
         cout << filename << " -euser arin -pswd eldora123!" << endl;
         cout << "\nTo display help screen : " << endl;
         cout << filename << " -help" << endl;
+        cout << "\n\nOnce logged in, you can:" << endl;
+        cout << "-> Continue your saved story" << endl;
+        cout << "-> Start a new adventure" << endl;
+        cout << "-> Delete your profile" << endl;
+        cout << "-> Exit the game" << endl;
+
         cout << "========================================================================================================" << endl;
     }
     //Wait for a key stroke if being called from the menu
@@ -219,7 +225,7 @@ void showHelp(bool fromMenu, string exeName)
         cout << "-> Option 4 : Exit the game" << endl;
         cout << "\n" << endl;
         cout << "Once logged in, you can:" << endl;
-        cout << "-> Continue your saved story" << endl;
+        cout << "-> Continue your saved game" << endl;
         cout << "-> Start a new adventure" << endl;
         cout << "-> Delete your profile" << endl;
         cout << "-> Exit the game" << endl;
