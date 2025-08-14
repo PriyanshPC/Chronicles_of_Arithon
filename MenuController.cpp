@@ -7,6 +7,19 @@
 #include "StoryEngine.h"   // Header for story engine functions
 using namespace std; // Use the standard namespace for convenience
 
+
+// Shows the main menu
+void showMainMenu() {
+    cout << "==============================" << endl;             // Print game title banner
+    cout << "||  CHRONICLES OF ARITHON  ||" << endl;
+    cout << "==============================" << endl << endl;
+    cout << "1. Login" << endl;                                   // Menu option: Login
+    cout << "2. Create New Profile" << endl;                      // Menu option: Create new user
+    cout << "3. Help" << endl;                                    // Menu option: Show help
+    cout << "4. Exit" << endl;                                    // Menu option: Exit game
+    cout << "------------------------------" << endl;             // Separator line
+    cout << "Please select an option: ";
+}
 // Displays the main game window and menu
 void showGameWindow(const UserData& user) {
     system("cls"); // Clear the console screen
@@ -85,7 +98,7 @@ bool handleMenuChoice(int choice, UserData& user) {
             return false;
 
         case 4: // Exit game
-            if (exitRequest(user)) { // Confirm exit
+            if (exitRequest(user, 'Y')) { // Confirm exit
                 exit(0); // Exit program
             }
             return false;
@@ -125,7 +138,7 @@ bool handleMenuChoice(int choice, UserData& user) {
             return false;
 
         case 3: // Exit game
-            if (exitRequest(user)) { // Confirm exit
+            if (exitRequest(user, 'Y')) { // Confirm exit
                 exit(0); // Exit program
             }
             return false;
@@ -149,62 +162,69 @@ bool deleteConfirmation() {
     return !input.empty() && (toupper(input[0]) == 'Y'); // Return true if 'Y' or 'y'
 }
 
-// Shows the main menu
-void showMainMenu() {
-    cout << "=============================="<<endl;             // Print game title banner
-    cout << "||  CHRONICLES OF ARITHON  ||" << endl;
-    cout << "==============================" << endl << endl;
-    cout << "1. Login" << endl;                                   // Menu option: Login
-    cout << "2. Create New Profile" << endl;                      // Menu option: Create new user
-	cout << "3. Help" << endl;                                    // Menu option: Show help
-    cout << "4. Exit" << endl;                                    // Menu option: Exit game
-	cout << "------------------------------" << endl;             // Separator line
-    cout << "Please select an option: ";
-}
-
 // Displays the help menu
 void showHelp(bool fromMenu, string exeName)
 {
     string fullPath(exeName);
     size_t pos = fullPath.find_last_of("\\/");
     string filename = ".\\" + ((pos != string::npos) ? fullPath.substr(pos + 1) : fullPath);
+    system("cls");
 
-    cout << "========================================================================================================" << endl;
-    cout << "============================= CHRONICLES OF ARITHON - HELP MENU ========================================" << endl;
-    cout << "========================================================================================================" << endl;
-    cout << "Welcome to Chronicles of Arithon! " << endl;
-    cout << "This is a text-based interactive story game." << endl;
-    cout << endl;
-    cout << "Choices you make affect the story's outcome." << endl;
-    cout << "Make decisions wisely - your story depends on them." << endl;
-    cout << endl;
-    cout << "Before playing, create a new user or log-in as an existing one." << endl;
-    cout << "Use the main menu or the command line arguments to login/register" << endl;
-    cout << endl;
-    cout << "=== Using the Main Menu ===      |    === Using the Command Line ===" << endl;
-    cout << "                                 |" << endl;
-    cout << "-> Log In as an existing user    |    To create a new profile:" << endl;
-    cout << "-> Register as a new user        |       " << filename << " -nuser <username>" << endl;
-    cout << "-> Display this help menu        |                                 -pswd  <password>" << endl;
-    cout << "-> Exit the game                 |                                 -cpswd <same password>" << endl;
-    cout << "                                 |    Example:" << endl;
-    cout << "                                 |       " << filename << " -nuser arin" << endl;
-    cout << "                                 |                                 -pswd eldora123!" << endl;
-    cout << "                                 |                                 -cpswd eldora123!" << endl;
-    cout << "                                 |" << endl;
-    cout << "                                 |    To login with an existing profile:" << endl;
-    cout << "Once logged in, you can:         |       " << filename << " -euser <username> -pswd <password>" << endl;
-    cout << "-> Continue your saved story     |    Example:" << endl;
-    cout << "-> Start a new adventure         |       " << filename << " -euser arin -pswd eldora123!" << endl;
-    cout << "-> Delete your profile           |" << endl;
-    cout << "-> Exit the game                 |" << endl;
-    cout << "                                 |    To display help screen:" << endl;
-    cout << "                                 |       " << filename << " -info" << endl;
-    cout << "========================================================================================================" << endl;
-    
+    if(!fromMenu) { 
+        cout << "========================================================================================================" << endl;
+        cout << "============================= CHRONICLES OF ARITHON - HELP MENU ========================================" << endl;
+        cout << "========================================================================================================" << endl;
+        cout << "Welcome to Chronicles of Arithon! " << endl;
+        cout << "This is a text-based interactive story game." << endl;
+        cout << endl;
+        cout << "Choices you make affect the story's outcome." << endl;
+        cout << "Make decisions wisely - your story depends on them." << endl;
+        cout << endl;
+        cout << "Before playing, create a new user or log-in as an existing one." << endl;
+        cout << "Use the main menu or the command line arguments to login/register" << endl;
+        cout << endl;
+        cout << "===== Using the Command Line ===== " << endl;
+        cout << "" << endl;
+        cout << "To create a new profile:" << endl;
+        cout << filename << " -nuser <username> -pswd  <password> -cpswd <same password>" << endl;
+        cout << "\nExample:" << endl;
+        cout << filename << " -nuser arin -pswd eldora123!  -cpswd eldora123!" << endl;
+        cout << "\nTo login with an existing profile:" << endl;
+        cout << filename << " -euser <username> -pswd <password>" << endl;
+        cout << "\nExample:" << endl;
+        cout << filename << " -euser arin -pswd eldora123!" << endl;
+        cout << "\nTo display help screen : " << endl;
+        cout << filename << " -help" << endl;
+        cout << "========================================================================================================" << endl;
+    }
     //Wait for a key stroke if being called from the menu
     if (fromMenu) {
-        cout << "Press any key to continue ... ";
+
+        cout << "========================================================================================================" << endl;
+        cout << "============================= CHRONICLES OF ARITHON - HELP MENU ========================================" << endl;
+        cout << "========================================================================================================" << endl;
+        cout << "\nWelcome to Chronicles of Arithon! " << endl;
+        cout << "\nThis is a text-based interactive story game." << endl;
+        cout << "Choices you make affect the story's outcome." << endl;
+        cout << "Make decisions wisely - your story depends on them." << endl;
+        cout << endl;
+        cout << "Before playing, create a new user or log-in as an existing one." << endl;
+        cout << "Use the main menu or the command line arguments to login/register" << endl;
+        cout << endl;
+        cout << "===== Using the Main Menu ====="<< endl;
+        cout << "" << endl;
+        cout << "-> Option 1 : Log In as an existing user" << endl;
+        cout << "-> Option 2 : Register as a new user" << endl;
+        cout << "-> Option 3 : Display this help menu" << endl;
+        cout << "-> Option 4 : Exit the game" << endl;
+        cout << "\n" << endl;
+        cout << "Once logged in, you can:" << endl;
+        cout << "-> Continue your saved story" << endl;
+        cout << "-> Start a new adventure" << endl;
+        cout << "-> Delete your profile" << endl;
+        cout << "-> Exit the game" << endl;
+        cout << "========================================================================================================" << endl;
+        cout << "\nPress any key to continue ... ";
         int ch = _getch();
         system("cls");
     }
@@ -221,9 +241,6 @@ bool handleCommandLineLogin(UserData& user, Authenticator& AuthInstance)
     user.isNewUser = AuthInstance.isNewUserFlag();
 
     if (!AuthInstance.logIn(user)) {                         // If authentication or creation failed
-        if (AuthInstance.isDebugMode()) {
-            cout << "[Main] Command Line Login Failed!!";       
-        }
         return false;
     }
     return true;

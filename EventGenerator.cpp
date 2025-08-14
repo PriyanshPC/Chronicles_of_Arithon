@@ -44,7 +44,7 @@ char displayEvent(int chapterNumber, int eventNumber, UserData& user) {
         else if (choice == 'X') { // If user wants to exit
             char confirm; // Variable for exit confirmation
             while (true) { // Loop until valid confirmation
-                cout << "Are you sure you want to exit? (y/n): "; // Prompt for confirmation
+                cout << "\nAre you sure you want to exit? (y/n): "; // Prompt for confirmation
                 cin >> confirm; // Read confirmation
                 confirm = toupper(confirm); // Convert to uppercase
                 if (confirm == 'Y') { // If confirmed

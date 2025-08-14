@@ -18,7 +18,6 @@ private:
 	string inputPassword;
 	string inputPasswordConfirmation;
 	bool isNewUser;
-	bool DebugMode;
 
 	int countArgs;
 	vector<string> inputArgs;
@@ -60,12 +59,10 @@ public:
 	string getUsername() const;
 	string getPassword() const;
 	bool processInputArguments();
-	bool isDebugMode() const;
 	bool logIn(UserData& user);
 	void setInputVariables(const string& username, const string& password, const string& passwordConfirm, bool newUser, bool debugMode);
 
 	//Unused functions
-	void toggleDebugMode();
 	bool isLoggedIn() const;
 	string getLoggedInUser() const;
 	vector<string> getInputArguments() const;
