@@ -24,6 +24,7 @@
     <ProjectGuid>{f9ba60da-abcc-4cc9-a04c-2b0cb368563f}</ProjectGuid>
     <RootNamespace>ChroniclesofArithon</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>CoA-Game</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -128,7 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Authenticator.cpp" />
-    <ClCompile Include="Chronicles_of_Arithon.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="EventGenerator.cpp" />
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="MenuController.cpp" />

@@ -174,7 +174,7 @@ void showHelp(bool fromMenu, string exeName)
         cout << "========================================================================================================" << endl;
         cout << "============================= CHRONICLES OF ARITHON - HELP MENU ========================================" << endl;
         cout << "========================================================================================================" << endl;
-        cout << "Welcome to Chronicles of Arithon! " << endl;
+        cout << "Welcome to Chronicles of Arithon!" << endl;
         cout << "This is a text-based interactive story game." << endl;
         cout << endl;
         cout << "Choices you make affect the story's outcome." << endl;
